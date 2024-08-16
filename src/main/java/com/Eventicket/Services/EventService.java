@@ -24,8 +24,13 @@ public class EventService {
 
     public EventEntity update(EventEntity eventEntity, Long id) {
         try {
-            eventEntity.setId(id);
-            return eventRepository.save(eventEntity);
+            if (eventRepository.findById(id).isPresent()) {
+                eventEntity.setId(id);
+                return eventRepository.save(eventEntity);
+            } else {
+                System.out.println("Evento não encontrado com o ID: " + id);
+                return new EventEntity();
+            }
         } catch (Exception e) {
             System.out.println("Erro ao atualizar o evento: " + e.getMessage());
             return new EventEntity();
@@ -57,15 +62,15 @@ public class EventService {
 
     public EventEntity findById(Long id) {
         try {
-            if (eventRepository.findById(id).isPresent()) {
-                return eventRepository.findById(id).orElseThrow();
-            }else {
-                System.out.println("Evento não encontrado");
-                return new EventEntity();
-            }
+            return eventRepository.findById(id)
+                    .orElseThrow(() -> {
+                        System.out.println("Evento não encontrado com o ID: " + id);
+                        return new RuntimeException("Evento não encontrado");
+                    });
         } catch (Exception e) {
-            System.out.println("Erro ao buscar o evento" + e.getMessage());
+            System.out.println("Erro ao buscar o evento: " + e.getMessage());
             return new EventEntity();
         }
     }
+
 }
