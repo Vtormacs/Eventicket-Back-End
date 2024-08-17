@@ -45,4 +45,7 @@ public class AddresEntity {
     @JsonIgnoreProperties("endereco")
     private List<UserEntity> usuarios;
 
+    @OneToMany(mappedBy = "endereco")
+    @JsonIgnoreProperties("endereco")
+    private List<EventEntity> eventos;
 }
