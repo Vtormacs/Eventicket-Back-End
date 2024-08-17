@@ -4,15 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "Endereco")
-public class EnderecoEntity {
+@Table(name = "category")
+public class CategoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,20 +24,7 @@ public class EnderecoEntity {
     @NotNull
     @NotBlank
     @NotEmpty
-    private String estado;
+    @Column(unique = true)
+    private String nome;
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    private String cidade;
-
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    private String rua;
-
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    private String numero;
 }
