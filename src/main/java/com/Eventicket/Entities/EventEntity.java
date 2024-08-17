@@ -1,6 +1,7 @@
 package com.Eventicket.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -37,4 +38,9 @@ public class EventEntity {
     private String descricao;
 
 //Fazer associção com Ingresso e Endereço
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id")
+    @JsonIgnoreProperties("eventos")
+    private AddresEntity endereco;
+
 }

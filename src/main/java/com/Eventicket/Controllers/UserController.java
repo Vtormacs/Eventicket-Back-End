@@ -25,8 +25,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, Long id){
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, @PathVariable Long id){
         try {
             return new ResponseEntity<>(userService.update(userEntity, id), HttpStatus.OK);
         }catch (Exception e){
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(Long id){
+    public ResponseEntity<String> delete(@PathVariable Long id){
         try {
             return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
         }catch (Exception e){
@@ -52,8 +52,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/findById")
-    public ResponseEntity<UserEntity> findById(Long id){
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<UserEntity> findById(@PathVariable Long id){
         try {
             return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
         }catch (Exception e){
