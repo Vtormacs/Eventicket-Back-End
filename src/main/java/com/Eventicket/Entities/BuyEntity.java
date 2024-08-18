@@ -15,7 +15,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
+@Entity(name = "buy")
 @Table(name = "buy")
 public class BuyEntity {
 
