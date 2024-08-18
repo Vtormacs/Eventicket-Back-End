@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jdk.jfr.Event;
 import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,5 +39,7 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private StatusTicket statusTicket;
 
-//Fazer associção com Ingresso e Endereço
+    @ManyToOne()
+    @JoinColumn(name = "evento_id")
+    private EventEntity evento;
 }
