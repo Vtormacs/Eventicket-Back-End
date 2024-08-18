@@ -1,5 +1,6 @@
 package com.Eventicket.Entities;
 
+import com.Eventicket.Entities.Enums.CategoryTicket;
 import com.Eventicket.Entities.Enums.StatusTicket;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,5 +40,8 @@ public class TicketEntity {
 
     @Enumerated(EnumType.STRING)
     private StatusTicket statusTicket;
+
+    @Enumerated(EnumType.STRING)
+    private CategoryTicket categoryTicket;
 
 }
