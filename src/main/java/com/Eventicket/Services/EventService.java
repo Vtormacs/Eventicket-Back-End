@@ -1,6 +1,7 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.EventEntity;
+import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class EventService {
 
     public EventEntity save(EventEntity eventEntity) {
         try {
+            for(TicketEntity ingresso : eventEntity.getIngresso()){
+                ingresso.setEvento(eventEntity);
+            }
             return eventRepository.save(eventEntity);
         } catch (Exception e) {
             System.out.println("Erro ao salvar o evento: " + e.getMessage());

@@ -1,11 +1,14 @@
 package com.Eventicket.Entities;
 
+import com.Eventicket.Entities.Enums.CategoryTicket;
 import com.Eventicket.Entities.Enums.StatusTicket;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jdk.jfr.Event;
 import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,5 +42,13 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private StatusTicket statusTicket;
 
-//Fazer associção com Ingresso e Endereço
+    // associação ticket evento
+    @ManyToOne
+    @JoinColumn(name = "evento_id")
+    @JsonIgnoreProperties("ingresso")
+    private EventEntity evento;
+
+    @Enumerated(EnumType.STRING)
+    private CategoryTicket categoryTicket;
+
 }

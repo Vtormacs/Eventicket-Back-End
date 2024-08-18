@@ -1,5 +1,6 @@
 package com.Eventicket.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -8,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,4 +30,7 @@ public class CategoryEntity {
     @Column(unique = true)
     private String nome;
 
+    @ManyToMany(mappedBy = "categories")
+    @JsonIgnoreProperties("categories")
+    private Set<EventEntity> events;
 }
