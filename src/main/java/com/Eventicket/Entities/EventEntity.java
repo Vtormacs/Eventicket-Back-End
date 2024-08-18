@@ -46,7 +46,8 @@ public class EventEntity {
     private AddresEntity endereco;
 
     // associação evento ingresso
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("evento")
     private List<TicketEntity> ingresso;
 
     // associcação categoria e evento

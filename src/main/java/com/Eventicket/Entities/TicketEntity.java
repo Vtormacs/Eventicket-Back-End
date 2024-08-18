@@ -43,8 +43,9 @@ public class TicketEntity {
     private StatusTicket statusTicket;
 
     // associação ticket evento
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "evento_id")
+    @JsonIgnoreProperties("ingresso")
     private EventEntity evento;
 
     @Enumerated(EnumType.STRING)
