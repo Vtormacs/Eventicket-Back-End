@@ -10,6 +10,7 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,10 +38,18 @@ public class EventEntity {
     @NotEmpty
     private String descricao;
 
-//Fazer associção com Ingresso e Endereço
+    //Fazer associção com Ingresso e Endereço
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
     @JsonIgnoreProperties("eventos")
     private AddresEntity endereco;
 
+    @ManyToMany
+    @JoinTable(
+            name = "event_category",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    @JsonIgnoreProperties("events")
+    private Set<CategoryEntity> categories;
 }
