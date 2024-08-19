@@ -83,7 +83,7 @@ public class EventService {
 
     public List<EventEntity> findAll() {
         try {
-            return eventRepository.findAllWithAddressAndTickets();
+            return eventRepository.findAll();
         } catch (Exception e) {
             System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
             return List.of();
