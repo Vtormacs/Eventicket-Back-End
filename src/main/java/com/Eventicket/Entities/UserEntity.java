@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.UniqueElements;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -51,4 +53,8 @@ public class UserEntity {
     @JoinColumn(name = "endereco_id")
     @JsonIgnoreProperties("usuarios")
     private AddresEntity endereco;
+
+    @OneToMany(mappedBy = "usuario")
+    @JsonIgnoreProperties("usuario")
+    private List<BuyEntity> compras;
 }

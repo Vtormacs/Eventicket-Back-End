@@ -15,10 +15,10 @@ public class BuyController {
     @Autowired
     private BuyService buyService;
 
-    @PostMapping("/save")
-    public ResponseEntity<BuyEntity> save(@RequestBody BuyEntity buyEntity) {
+    @PostMapping("/sell/{idUsuario}")
+    public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario,@RequestBody List<Long> idIngressos) {
         try {
-            return ResponseEntity.ok(buyService.save(buyEntity));
+            return ResponseEntity.ok(buyService.save(idUsuario,idIngressos));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

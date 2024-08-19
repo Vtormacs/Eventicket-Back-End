@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -51,4 +52,7 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private CategoryTicket categoryTicket;
 
+    @ManyToMany(mappedBy = "ingressos")
+    @JsonIgnoreProperties("ingressos")
+    private List<BuyEntity> compras;
 }
