@@ -1,5 +1,6 @@
 package com.Eventicket.Controllers;
 
+import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,15 @@ public class UserController {
             return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/buscarEventos/{idUsuario}")
+    public ResponseEntity<List<EventEntity>> buscarEventosDaMesmaCidade(@PathVariable Long idUsuario) {
+        try {
+            return ResponseEntity.ok(userService.buscarEventosDaMesmaCidade(idUsuario));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }
