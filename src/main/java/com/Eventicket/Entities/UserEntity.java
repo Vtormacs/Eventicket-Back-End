@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.UniqueElements;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "users")
 @Table(name = "users")
 public class UserEntity {
 
