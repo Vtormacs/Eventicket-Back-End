@@ -1,5 +1,6 @@
 package com.Eventicket.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -42,10 +43,10 @@ public class AddresEntity {
     private String numero;
 
     @OneToMany(mappedBy = "endereco")
-    @JsonIgnoreProperties("endereco")
+    @JsonIgnore
     private List<UserEntity> usuarios;
 
     @OneToMany(mappedBy = "endereco")
-    @JsonIgnoreProperties("endereco")
+    @JsonIgnore
     private List<EventEntity> eventos;
 }

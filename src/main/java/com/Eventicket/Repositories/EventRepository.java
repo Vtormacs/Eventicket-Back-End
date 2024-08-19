@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
@@ -25,6 +26,11 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE ticket t SET t.preco = :preco, t.quantidade = :quantidade, t.statusTicket = :statusTicket, t.categoryTicket = :categoryTicket WHERE t.id = :id")
-    void atualizarIngresso(@Param("id") Long id, @Param("preco") Double preco, @Param("quantidade") Integer quantidade, @Param("statusTicket") StatusTicket statusTicket, @Param("categoryTicket") CategoryTicket categoryTicket);
+    @Query("UPDATE ticket t SET t.preco = :preco, t.statusTicket = :statusTicket, t.categoryTicket = :categoryTicket WHERE t.id = :id")
+    void atualizarIngresso(@Param("id") Long id, @Param("preco") Double preco,  @Param("statusTicket") StatusTicket statusTicket, @Param("categoryTicket") CategoryTicket categoryTicket);
+
+    @Query("SELECT e FROM event e " +
+            "JOIN FETCH e.endereco " +
+            "JOIN FETCH e.ingresso")
+    List<EventEntity> findAllWithAddressAndTickets();
 }

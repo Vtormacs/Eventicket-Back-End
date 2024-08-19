@@ -49,7 +49,7 @@ public class EventService {
                 for (TicketEntity ingresso : ingressos) {
                     if (ingresso.getId() != null) {
                         // Atualiza ingresso existente
-                        eventRepository.atualizarIngresso(ingresso.getId(), ingresso.getPreco(), ingresso.getQuantidade(), ingresso.getStatusTicket(), ingresso.getCategoryTicket());
+                        eventRepository.atualizarIngresso(ingresso.getId(), ingresso.getPreco(), ingresso.getStatusTicket(), ingresso.getCategoryTicket());
                     } else {
                         // Adiciona novo ingresso
                         ingresso.setEvento(eventoExistente);
@@ -83,7 +83,7 @@ public class EventService {
 
     public List<EventEntity> findAll() {
         try {
-            return eventRepository.findAll();
+            return eventRepository.findAllWithAddressAndTickets();
         } catch (Exception e) {
             System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
             return List.of();

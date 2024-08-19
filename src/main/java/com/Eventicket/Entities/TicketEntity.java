@@ -2,22 +2,19 @@ package com.Eventicket.Entities;
 
 import com.Eventicket.Entities.Enums.CategoryTicket;
 import com.Eventicket.Entities.Enums.StatusTicket;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+
 import jakarta.validation.constraints.NotNull;
-import jdk.jfr.Event;
-import jdk.jshell.Snippet;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,10 +30,7 @@ public class TicketEntity {
 
     @NotNull
     private Double preco;
-
-    @NotNull
-    private Integer quantidade;
-
+    
     ///EnumType.STRING: Isso especifica que o valor da enumeração será armazenado como uma string no banco de dados, em vez de um número inteiro.
     //@Enumerated: Essa anotação é usada para mapear o campo da enumeração statusTicket para uma coluna no banco de dados.
 
@@ -53,6 +47,6 @@ public class TicketEntity {
     private CategoryTicket categoryTicket;
 
     @ManyToMany(mappedBy = "ingressos")
-    @JsonIgnoreProperties("ingressos")
+    @JsonIgnore
     private List<BuyEntity> compras;
 }
