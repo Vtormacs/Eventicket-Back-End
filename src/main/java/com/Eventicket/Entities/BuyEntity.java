@@ -47,6 +47,6 @@ public class BuyEntity {
     @JsonIgnoreProperties("compras")
     private List<TicketEntity> ingressos;
 
-    @NotNull
+    @NotNull // pode estar faltando validation aqui
     Double total;
 }

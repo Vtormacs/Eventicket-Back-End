@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class EventEntity {
     @NotNull
     @NotBlank
     @NotEmpty
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "O nome deve conter apenas letras e espaços.")
     private String nome;
 
     @NotNull
@@ -37,6 +39,7 @@ public class EventEntity {
     @NotNull
     @NotBlank
     @NotEmpty
+    //@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9 .,;!?'\"-]+$", message = "A descrição pode conter letras, números, espaços e caracteres de pontuação básicos.")
     private String descricao;
 
     // associação evento endereço
