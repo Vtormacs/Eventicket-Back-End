@@ -49,7 +49,7 @@ public class EventService {
                 for (TicketEntity ingresso : ingressos) {
                     if (ingresso.getId() != null) {
                         // Atualiza ingresso existente
-                        eventRepository.atualizarIngresso(ingresso.getId(), ingresso.getPreco(), ingresso.getQuantidade(), ingresso.getStatusTicket(), ingresso.getCategoryTicket());
+                        eventRepository.atualizarIngresso(ingresso.getId(), ingresso.getPreco(), ingresso.getStatusTicket(), ingresso.getCategoryTicket());
                     } else {
                         // Adiciona novo ingresso
                         ingresso.setEvento(eventoExistente);

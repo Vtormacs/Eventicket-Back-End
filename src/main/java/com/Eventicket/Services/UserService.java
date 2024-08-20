@@ -1,6 +1,7 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.AddresEntity;
+import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,19 @@ public class UserService {
         } catch (Exception e) {
             System.out.println("Erro ao buscar o usuário: " + e.getMessage());
             return new UserEntity();
+        }
+    }
+
+    public List<EventEntity> buscarEventosDaMesmaCidade (Long idUsuario){
+        try {
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
+
+            String cidade = usuario.getEndereco().getCidade();
+
+            return userRepository.buscarEventosDaMesmaCidade(cidade);
+        } catch (Exception e) {
+            System.out.println("Erro ao retornar a lista de usuários: " + e.getMessage());
+            return List.of();
         }
     }
 }

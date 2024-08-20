@@ -1,10 +1,17 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.BuyEntity;
+import com.Eventicket.Entities.Enums.StatusBuy;
+import com.Eventicket.Entities.TicketEntity;
+import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.BuyRepository;
+import com.Eventicket.Repositories.TicketRepository;
+import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -13,9 +20,32 @@ public class BuyService {
     @Autowired
     private BuyRepository buyRepository;
 
-    public BuyEntity save(BuyEntity buyEntity) {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    public BuyEntity save(Long idUsuario, List<Long> idIngressos) {
         try {
-            return buyRepository.save(buyEntity);
+
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
+
+            List<TicketEntity> ingressos = ticketRepository.findAllById(idIngressos);
+            if (ingressos.isEmpty()){
+                throw new RuntimeException("ingressos n encontrados");
+            }
+
+            Double total = ingressos.stream().mapToDouble(TicketEntity::getPreco).sum();
+
+            BuyEntity venda = new BuyEntity();
+            venda.setData(Instant.now());
+            venda.setStatusBuy(StatusBuy.PAGO);
+            venda.setUsuario(usuario);
+            venda.setIngressos(ingressos);
+            venda.setTotal(total);
+
+            return buyRepository.save(venda);
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());
             return new BuyEntity();
