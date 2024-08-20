@@ -31,8 +31,6 @@ public class TicketEntity {
     private Long id;
 
     @NotNull
-    @DecimalMin(value = "0.0", inclusive = false, message = "O preço deve ser maior que zero.")
-    @Digits(integer = 10, fraction = 2, message = "O preço deve ter no máximo 10 dígitos inteiros e 2 casas decimais.")
     private Double preco;
     
     ///EnumType.STRING: Isso especifica que o valor da enumeração será armazenado como uma string no banco de dados, em vez de um número inteiro.
@@ -41,14 +39,14 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private StatusTicket statusTicket;
 
+    @Enumerated(EnumType.STRING)
+    private CategoryTicket categoryTicket;
+
     // associação ticket evento
     @ManyToOne
     @JoinColumn(name = "evento_id")
     @JsonIgnoreProperties("ingresso")
     private EventEntity evento;
-
-    @Enumerated(EnumType.STRING)
-    private CategoryTicket categoryTicket;
 
     @ManyToMany(mappedBy = "ingressos")
     @JsonIgnore

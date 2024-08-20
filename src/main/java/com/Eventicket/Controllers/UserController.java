@@ -18,47 +18,47 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/save")
-    public ResponseEntity<UserEntity> save(@RequestBody UserEntity userEntity){
+    public ResponseEntity<UserEntity> save(@RequestBody UserEntity userEntity) {
         try {
-            return new ResponseEntity<>(userService.save(userEntity), HttpStatus.CREATED);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(userService.save(userEntity));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, @PathVariable Long id){
         try {
-            return new ResponseEntity<>(userService.update(userEntity, id), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(userService.update(userEntity, id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
         try {
-            return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(userService.delete(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/findAll")
     public ResponseEntity<List<UserEntity>> findAll(){
         try {
-            return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(userService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<UserEntity> findById(@PathVariable Long id){
         try {
-            return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(userService.findById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 

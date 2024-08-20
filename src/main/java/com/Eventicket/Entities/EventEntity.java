@@ -48,11 +48,6 @@ public class EventEntity {
     @JsonIgnoreProperties("eventos")
     private AddresEntity endereco;
 
-    // associação evento ingresso
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("evento")
-    private List<TicketEntity> ingresso;
-
     // associcação categoria e evento
     @ManyToMany
     @JoinTable(
@@ -62,4 +57,10 @@ public class EventEntity {
     )
     @JsonIgnoreProperties("events")
     private Set<CategoryEntity> categories;
+
+    // associação evento ingresso
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("evento")
+    private List<TicketEntity> ingresso;
+
 }

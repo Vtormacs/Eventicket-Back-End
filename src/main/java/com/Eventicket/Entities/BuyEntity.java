@@ -27,6 +27,9 @@ public class BuyEntity {
 
     private Instant data;
 
+    @NotNull // pode estar faltando validation aqui
+    private Double total;
+
     ///EnumType.STRING: Isso especifica que o valor da enumeração será armazenado como uma string no banco de dados, em vez de um número inteiro.
     //@Enumerated: Essa anotação é usada para mapear o campo da enumeração statusBuy para uma coluna no banco de dados.
 
@@ -46,7 +49,4 @@ public class BuyEntity {
     )
     @JsonIgnoreProperties("compras")
     private List<TicketEntity> ingressos;
-
-    @NotNull // pode estar faltando validation aqui
-    Double total;
 }
