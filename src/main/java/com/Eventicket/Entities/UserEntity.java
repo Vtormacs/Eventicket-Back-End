@@ -1,5 +1,6 @@
 package com.Eventicket.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -63,10 +64,10 @@ public class UserEntity {
     private AddresEntity endereco;
 
     @OneToMany(mappedBy = "usuario")
-    @JsonIgnoreProperties("usuario")
+    @JsonIgnoreProperties({"ingressos", "usuario"})
     private List<BuyEntity> compras = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
-    @JsonIgnoreProperties("usuario")
+    @JsonIgnoreProperties({"usuario"})
     private List<TicketEntity> ingressos = new ArrayList<>();
 }

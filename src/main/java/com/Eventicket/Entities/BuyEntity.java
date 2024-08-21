@@ -1,7 +1,6 @@
 package com.Eventicket.Entities;
 
 import com.Eventicket.Entities.Enums.StatusBuy;
-import com.Eventicket.Entities.Enums.StatusTicket;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -35,23 +34,17 @@ public class BuyEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties("compras")
+    @JsonIgnoreProperties({"compras", "ingressos"})
     private UserEntity usuario;
 
-    @ManyToMany
-    @JoinTable(
-            name = "buy_ticket",
-            joinColumns = @JoinColumn(name = "buy_id"),
-            inverseJoinColumns = @JoinColumn(name = "ticket_id")
-    )
-    @JsonIgnoreProperties("compras")
+    @OneToMany(mappedBy = "compra")
+    @JsonIgnoreProperties({"compra", "usuario"})
     private List<TicketEntity> ingressos;
 
-    public BuyEntity(Instant data, Double total, StatusBuy statusBuy, UserEntity usuario, List<TicketEntity> ingressos) {
+    public BuyEntity(Instant data, Double total, StatusBuy statusBuy, UserEntity usuario) {
         this.data = data;
         this.total = total;
         this.statusBuy = statusBuy;
         this.usuario = usuario;
-        this.ingressos = ingressos;
     }
 }

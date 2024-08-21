@@ -28,22 +28,16 @@ public class EventService {
 
     public EventEntity update(EventEntity eventEntity, Long id) {
         try {
-            // Tenta encontrar o evento pelo ID e lança uma exceção se não for encontrado
             EventEntity eventoExistente = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento não encontrado com o id: " + id));
 
-            // Atualizando campos principais do evento
             eventRepository.atualizarEvento(id, eventEntity.getNome(), eventEntity.getData(), eventEntity.getDescricao());
 
-            // Atualizando o endereço, se necessário
             AddresEntity novoEndereco = eventEntity.getEndereco();
             if (novoEndereco != null && eventoExistente.getEndereco() != null) {
                 eventRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
             }
 
             return eventoExistente;
-        } catch (EntityNotFoundException e) {
-            System.err.println("Erro: " + e.getMessage());
-            return null;
         } catch (Exception e) {
             System.err.println("Erro ao atualizar o evento: " + e.getMessage());
             return null;

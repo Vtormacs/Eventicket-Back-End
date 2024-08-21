@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,27 +34,33 @@ public class BuyService {
 
     public BuyEntity save(Long idUsuario, List<Long> idEventos) {
         try {
-
-            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
             List<EventEntity> eventos = eventRepository.findAllById(idEventos);
-            if (eventos.isEmpty()){
-                throw new RuntimeException("Eventos n encontrados");
+            if (eventos.isEmpty()) {
+                throw new RuntimeException("Eventos não encontrados");
             }
 
             Double total = eventos.stream().mapToDouble(EventEntity::getPrecoDoIngresso).sum();
 
-            List<TicketEntity> ingressos = eventos.stream().map(evento -> {
-                TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, evento);
-                return ticketRepository.save(ingresso); // Salvar cada ticket no repositório
-            }).toList();
+            BuyEntity venda = new BuyEntity(Instant.now(), total, StatusBuy.PAGO, usuario);
+            venda = buyRepository.save(venda);
 
-            BuyEntity venda = new BuyEntity(Instant.now(), total, StatusBuy.PAGO, usuario, ingressos);
+            List<TicketEntity> ingressos = new ArrayList<>();
+            for (EventEntity evento : eventos) {
+                TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, evento, venda);
+                ingresso = ticketRepository.save(ingresso);
+                ingressos.add(ingresso);
+                int quantidade = evento.getQuantidade();
+                quantidade -= 1;
+                evento.setQuantidade(quantidade);
+            }
 
+            venda.setIngressos(ingressos);
             return buyRepository.save(venda);
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());
-            return new BuyEntity();
+            throw new RuntimeException("Erro ao salvar a compra", e);
         }
     }
 
