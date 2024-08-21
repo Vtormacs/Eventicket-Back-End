@@ -1,5 +1,7 @@
 package com.Eventicket.Entities;
+
 import com.Eventicket.Entities.Enums.StatusTicket;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,16 +25,24 @@ public class TicketEntity {
     private StatusTicket statusTicket;
 
     @ManyToOne
-    @JsonIgnoreProperties("ingressos")
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"ingressos", "compras"})
     private UserEntity usuario;
 
     @ManyToOne
     @JoinColumn(name = "evento_id")
+    @JsonIgnoreProperties("ingressos")
     private EventEntity evento;
 
-    public TicketEntity(StatusTicket statusTicket, UserEntity usuario, EventEntity evento) {
+    @ManyToOne
+    @JoinColumn(name = "compra_id")
+    @JsonIgnore
+    private BuyEntity compra;
+
+    public TicketEntity(StatusTicket statusTicket, UserEntity usuario, EventEntity evento, BuyEntity compra) {
         this.statusTicket = statusTicket;
         this.usuario = usuario;
         this.evento = evento;
+        this.compra = compra;
     }
 }
