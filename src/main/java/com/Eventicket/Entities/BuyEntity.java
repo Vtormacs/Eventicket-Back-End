@@ -3,6 +3,7 @@ package com.Eventicket.Entities;
 import com.Eventicket.Entities.Enums.StatusBuy;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,11 +25,13 @@ public class BuyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private Instant data;
 
     @NotNull
     private Double total;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private StatusBuy statusBuy;
 

@@ -3,6 +3,7 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
+import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.EventRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private AddresRepository addresRepository;
+
     public EventEntity save(EventEntity eventEntity) {
         try {
             return eventRepository.save(eventEntity);
@@ -30,11 +34,11 @@ public class EventService {
         try {
             EventEntity eventoExistente = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento não encontrado com o id: " + id));
 
-            eventRepository.atualizarEvento(id, eventEntity.getNome(), eventEntity.getData(), eventEntity.getDescricao());
+            eventRepository.atualizarEvento(id, eventEntity.getNome(), eventEntity.getData(), eventEntity.getDescricao(), eventEntity.getQuantidade());
 
             AddresEntity novoEndereco = eventEntity.getEndereco();
             if (novoEndereco != null && eventoExistente.getEndereco() != null) {
-                eventRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
+                addresRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
             }
 
             return eventoExistente;

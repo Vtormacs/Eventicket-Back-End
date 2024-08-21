@@ -41,6 +41,12 @@ public class BuyService {
                 throw new RuntimeException("Eventos não encontrados");
             }
 
+            for (EventEntity eventEntity : eventos){
+                if (eventEntity.getQuantidade() <= 0){
+                    throw new RuntimeException("A capacidade dos eventos já está no limite");
+                }
+            }
+
             Double total = eventos.stream().mapToDouble(EventEntity::getPrecoDoIngresso).sum();
 
             BuyEntity venda = new BuyEntity(Instant.now(), total, StatusBuy.PAGO, usuario);

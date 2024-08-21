@@ -32,8 +32,10 @@ public class EventEntity {
     @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "O nome deve conter apenas letras e espaços.")
     private String nome;
 
+    @NotNull
     private Double precoDoIngresso;
 
+    @NotNull
     private Integer quantidade;
 
     @NotNull

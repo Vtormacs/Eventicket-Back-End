@@ -1,7 +1,10 @@
 package com.Eventicket.Controllers;
 
 import com.Eventicket.Entities.BuyEntity;
+import com.Eventicket.Entities.EventEntity;
+import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Services.BuyService;
+import org.hibernate.metamodel.mapping.EntityVersionMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,9 @@ public class BuyController {
 
     @Autowired
     private BuyService buyService;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @PostMapping("/sell/{idUsuario}")
     public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario,@RequestBody List<Long> idEventos) {

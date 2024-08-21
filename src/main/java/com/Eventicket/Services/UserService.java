@@ -3,6 +3,7 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
+import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,7 +20,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private EventRepository eventRepository;
+    private AddresRepository addresRepository;
 
     public UserEntity save(UserEntity userEntity) {
         try {
@@ -38,7 +39,7 @@ public class UserService {
 
             AddresEntity novoEndereco = userEntity.getEndereco();
             if (novoEndereco != null && usuarioExistente.getEndereco() != null) {
-                eventRepository.atualizarEndereco(usuarioExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
+                addresRepository.atualizarEndereco(usuarioExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
             }
 
             return usuarioExistente;
