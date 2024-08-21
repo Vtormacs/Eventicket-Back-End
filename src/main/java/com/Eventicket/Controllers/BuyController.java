@@ -16,9 +16,9 @@ public class BuyController {
     private BuyService buyService;
 
     @PostMapping("/sell/{idUsuario}")
-    public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario,@RequestBody List<Long> idIngressos) {
+    public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario,@RequestBody List<Long> idEventos) {
         try {
-            return ResponseEntity.ok(buyService.save(idUsuario,idIngressos));
+            return ResponseEntity.ok(buyService.save(idUsuario,idEventos));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

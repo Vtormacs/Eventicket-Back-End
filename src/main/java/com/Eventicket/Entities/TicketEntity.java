@@ -1,22 +1,11 @@
 package com.Eventicket.Entities;
-
-import com.Eventicket.Entities.Enums.CategoryTicket;
 import com.Eventicket.Entities.Enums.StatusTicket;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,4 +29,10 @@ public class TicketEntity {
     @ManyToOne
     @JoinColumn(name = "evento_id")
     private EventEntity evento;
+
+    public TicketEntity(StatusTicket statusTicket, UserEntity usuario, EventEntity evento) {
+        this.statusTicket = statusTicket;
+        this.usuario = usuario;
+        this.evento = evento;
+    }
 }

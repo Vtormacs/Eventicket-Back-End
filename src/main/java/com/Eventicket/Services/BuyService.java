@@ -3,13 +3,14 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.BuyEntity;
 import com.Eventicket.Entities.Enums.StatusBuy;
 import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.BuyRepository;
+import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
 import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,30 +28,28 @@ public class BuyService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    public BuyEntity save(Long idUsuario, List<Long> idIngressos) {
+    @Autowired
+    private EventRepository eventRepository;
+
+    public BuyEntity save(Long idUsuario, List<Long> idEventos) {
         try {
 
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
 
-            List<TicketEntity> ingressos = ticketRepository.findAllById(idIngressos);
-            if (ingressos.isEmpty()){
-                throw new RuntimeException("ingressos n encontrados");
+            List<EventEntity> eventos = eventRepository.findAllById(idEventos);
+            if (eventos.isEmpty()){
+                throw new RuntimeException("Eventos n encontrados");
             }
 
-            Double total = 0.0;
+            Double total = eventos.stream().mapToDouble(EventEntity::getPrecoDoIngresso).sum();
 
-            BuyEntity venda = new BuyEntity();
-            venda.setData(Instant.now());
-            venda.setStatusBuy(StatusBuy.PAGO);
-            venda.setUsuario(usuario);
-            venda.setIngressos(ingressos);
-            venda.setTotal(total);
+            List<TicketEntity> ingressos = eventos.stream().map(evento -> {
+                TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, evento);
+                return ticketRepository.save(ingresso); // Salvar cada ticket no repositório
+            }).toList();
 
-            //TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, );
+            BuyEntity venda = new BuyEntity(Instant.now(), total, StatusBuy.PAGO, usuario, ingressos);
 
-
-            //criar ticket com o usuario e evento e definir o status como valido
-            //o ingresso só vai ter o status
             return buyRepository.save(venda);
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());
