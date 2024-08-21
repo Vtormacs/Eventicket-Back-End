@@ -32,6 +32,10 @@ public class EventEntity {
     @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "O nome deve conter apenas letras e espaços.")
     private String nome;
 
+    private Double precoDoIngresso;
+
+    private Integer quantidade;
+
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date data;
@@ -57,10 +61,4 @@ public class EventEntity {
     )
     @JsonIgnoreProperties("events")
     private Set<CategoryEntity> categories;
-
-    // associação evento ingresso
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("evento")
-    private List<TicketEntity> ingresso;
-
 }

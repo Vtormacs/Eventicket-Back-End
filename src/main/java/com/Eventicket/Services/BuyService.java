@@ -2,6 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.BuyEntity;
 import com.Eventicket.Entities.Enums.StatusBuy;
+import com.Eventicket.Entities.Enums.StatusTicket;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.BuyRepository;
@@ -36,7 +37,7 @@ public class BuyService {
                 throw new RuntimeException("ingressos n encontrados");
             }
 
-            Double total = ingressos.stream().mapToDouble(TicketEntity::getPreco).sum();
+            Double total = 0.0;
 
             BuyEntity venda = new BuyEntity();
             venda.setData(Instant.now());
@@ -45,6 +46,11 @@ public class BuyService {
             venda.setIngressos(ingressos);
             venda.setTotal(total);
 
+            //TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, );
+
+
+            //criar ticket com o usuario e evento e definir o status como valido
+            //o ingresso só vai ter o status
             return buyRepository.save(venda);
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());

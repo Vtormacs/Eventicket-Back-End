@@ -24,8 +24,8 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query("UPDATE addres a SET a.rua = :rua, a.numero = :numero, a.cidade = :cidade, a.estado = :estado WHERE a.id = :id")
     void atualizarEndereco(@Param("id") Long id, @Param("rua") String rua, @Param("numero") String numero, @Param("cidade") String cidade, @Param("estado") String estado);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE ticket t SET t.preco = :preco, t.statusTicket = :statusTicket, t.categoryTicket = :categoryTicket WHERE t.id = :id")
-    void atualizarIngresso(@Param("id") Long id, @Param("preco") Double preco,  @Param("statusTicket") StatusTicket statusTicket, @Param("categoryTicket") CategoryTicket categoryTicket);
+    //@Modifying
+    //@Transactional
+    //@Query("UPDATE ticket t SET t.preco = :preco, t.statusTicket = :statusTicket, t.categoryTicket = :categoryTicket WHERE t.id = :id")
+    //void atualizarIngresso(@Param("id") Long id, @Param("preco") Double preco,  @Param("statusTicket") StatusTicket statusTicket, @Param("categoryTicket") CategoryTicket categoryTicket);
 }

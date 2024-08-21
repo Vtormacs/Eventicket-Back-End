@@ -19,9 +19,6 @@ public class EventService {
 
     public EventEntity save(EventEntity eventEntity) {
         try {
-            for (TicketEntity ingresso : eventEntity.getIngresso()) {
-                ingresso.setEvento(eventEntity);
-            }
             return eventRepository.save(eventEntity);
         } catch (Exception e) {
             System.out.println("Erro ao salvar o evento: " + e.getMessage());
@@ -43,20 +40,6 @@ public class EventService {
                 eventRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
             }
 
-            // Atualizando os ingressos
-            List<TicketEntity> ingressos = eventEntity.getIngresso();
-            if (ingressos != null) {
-                for (TicketEntity ingresso : ingressos) {
-                    if (ingresso.getId() != null) {
-                        // Atualiza ingresso existente
-                        eventRepository.atualizarIngresso(ingresso.getId(), ingresso.getPreco(), ingresso.getStatusTicket(), ingresso.getCategoryTicket());
-                    } else {
-                        // Adiciona novo ingresso
-                        ingresso.setEvento(eventoExistente);
-                        eventoExistente.getIngresso().add(ingresso);
-                    }
-                }
-            }
             return eventoExistente;
         } catch (EntityNotFoundException e) {
             System.err.println("Erro: " + e.getMessage());
