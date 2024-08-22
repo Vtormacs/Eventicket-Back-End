@@ -61,4 +61,13 @@ public class TicketController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PostMapping("/changeStatus/{id}")
+    public ResponseEntity<TicketEntity> changeStatus(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok(ticketService.changeStatus(id));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

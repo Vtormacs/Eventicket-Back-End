@@ -1,5 +1,6 @@
 package com.Eventicket.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -10,6 +11,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.hibernate.validator.constraints.br.CPF;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -33,7 +36,7 @@ public class UserEntity {
     @NotNull
     @NotEmpty
     @NotBlank
-    @CPF(message = "O CPF deve ser válido.")
+    @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}$", message = "O CPF deve estar no formato XXX.XXX.XXX-XX")
     @Column(unique = true)
     private String cpf;
 
@@ -61,6 +64,10 @@ public class UserEntity {
     private AddresEntity endereco;
 
     @OneToMany(mappedBy = "usuario")
-    @JsonIgnoreProperties("usuario")
-    private List<BuyEntity> compras;
+    @JsonIgnoreProperties({"ingressos", "usuario"})
+    private List<BuyEntity> compras = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario")
+    @JsonIgnoreProperties({"usuario"})
+    private List<TicketEntity> ingressos = new ArrayList<>();
 }

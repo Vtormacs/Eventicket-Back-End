@@ -1,5 +1,6 @@
 package com.Eventicket.Services;
 
+import com.Eventicket.Entities.Enums.StatusTicket;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Repositories.EventRepository;
@@ -73,6 +74,19 @@ public class TicketService {
                     });
         } catch (Exception e) {
             System.out.println("Erro ao buscar o ticket" + e.getMessage());
+            return new TicketEntity();
+        }
+    }
+
+    // futuramente pode receber o novo status como parametro para nao mudar apenas para usado
+    public TicketEntity changeStatus(Long id){
+        try {
+            TicketEntity ingresso = ticketRepository.findById(id).orElseThrow(() -> new RuntimeException("Ingresso não encontrado"));
+            ingresso.setStatusTicket(StatusTicket.USADO);
+
+            return ticketRepository.save(ingresso);
+        }catch (Exception e){
+            System.out.println("Erro ao alterar status do ticket" + e.getMessage());
             return new TicketEntity();
         }
     }

@@ -1,9 +1,9 @@
 package com.Eventicket.Entities;
 
 import com.Eventicket.Entities.Enums.StatusBuy;
-import com.Eventicket.Entities.Enums.StatusTicket;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,28 +25,29 @@ public class BuyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private Instant data;
 
-    ///EnumType.STRING: Isso especifica que o valor da enumeração será armazenado como uma string no banco de dados, em vez de um número inteiro.
-    //@Enumerated: Essa anotação é usada para mapear o campo da enumeração statusBuy para uma coluna no banco de dados.
+    @NotNull
+    private Double total;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private StatusBuy statusBuy;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties("compras")
+    @JsonIgnoreProperties({"compras", "ingressos"})
     private UserEntity usuario;
 
-    @ManyToMany
-    @JoinTable(
-            name = "buy_ticket",
-            joinColumns = @JoinColumn(name = "buy_id"),
-            inverseJoinColumns = @JoinColumn(name = "ticket_id")
-    )
-    @JsonIgnoreProperties("compras")
+    @OneToMany(mappedBy = "compra")
+    @JsonIgnoreProperties({"compra", "usuario"})
     private List<TicketEntity> ingressos;
 
-    @NotNull // pode estar faltando validation aqui
-    Double total;
+    public BuyEntity(Instant data, Double total, StatusBuy statusBuy, UserEntity usuario) {
+        this.data = data;
+        this.total = total;
+        this.statusBuy = statusBuy;
+        this.usuario = usuario;
+    }
 }

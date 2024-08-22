@@ -2,16 +2,19 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.BuyEntity;
 import com.Eventicket.Entities.Enums.StatusBuy;
+import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.BuyRepository;
+import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
 import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,29 +29,44 @@ public class BuyService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    public BuyEntity save(Long idUsuario, List<Long> idIngressos) {
+    @Autowired
+    private EventRepository eventRepository;
+
+    public BuyEntity save(Long idUsuario, List<Long> idEventos) {
         try {
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
-
-            List<TicketEntity> ingressos = ticketRepository.findAllById(idIngressos);
-            if (ingressos.isEmpty()){
-                throw new RuntimeException("ingressos n encontrados");
+            List<EventEntity> eventos = eventRepository.findAllById(idEventos);
+            if (eventos.isEmpty()) {
+                throw new RuntimeException("Eventos não encontrados");
             }
 
-            Double total = ingressos.stream().mapToDouble(TicketEntity::getPreco).sum();
+            for (EventEntity eventEntity : eventos){
+                if (eventEntity.getQuantidade() <= 0){
+                    throw new RuntimeException("A capacidade dos eventos já está no limite");
+                }
+            }
 
-            BuyEntity venda = new BuyEntity();
-            venda.setData(Instant.now());
-            venda.setStatusBuy(StatusBuy.PAGO);
-            venda.setUsuario(usuario);
+            Double total = eventos.stream().mapToDouble(EventEntity::getPrecoDoIngresso).sum();
+
+            BuyEntity venda = new BuyEntity(Instant.now(), total, StatusBuy.PAGO, usuario);
+            venda = buyRepository.save(venda);
+
+            List<TicketEntity> ingressos = new ArrayList<>();
+            for (EventEntity evento : eventos) {
+                TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, evento, venda);
+                ingresso = ticketRepository.save(ingresso);
+                ingressos.add(ingresso);
+                int quantidade = evento.getQuantidade();
+                quantidade -= 1;
+                evento.setQuantidade(quantidade);
+            }
+
             venda.setIngressos(ingressos);
-            venda.setTotal(total);
-
             return buyRepository.save(venda);
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());
-            return new BuyEntity();
+            throw new RuntimeException("Erro ao salvar a compra", e);
         }
     }
 

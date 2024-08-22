@@ -33,6 +33,12 @@ public class EventEntity {
     private String nome;
 
     @NotNull
+    private Double precoDoIngresso;
+
+    @NotNull
+    private Integer quantidade;
+
+    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date data;
 
@@ -47,11 +53,6 @@ public class EventEntity {
     @JoinColumn(name = "endereco_id")
     @JsonIgnoreProperties("eventos")
     private AddresEntity endereco;
-
-    // associação evento ingresso
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("evento")
-    private List<TicketEntity> ingresso;
 
     // associcação categoria e evento
     @ManyToMany
