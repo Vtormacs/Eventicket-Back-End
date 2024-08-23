@@ -1,4 +1,4 @@
-**Descrição do Projeto: Sistema de Gerenciamento de Eventos e Ingressos - Eventicket**
+
 
 O projeto "Eventicket" é uma aplicação de gerenciamento de eventos e vendas de ingressos, desenvolvida utilizando a plataforma Spring Boot. O objetivo principal é permitir a criação, atualização, busca e exclusão de eventos, ingressos, usuários, endereços e categorias, oferecendo uma experiência completa para a administração de eventos e a compra de ingressos. 
 
