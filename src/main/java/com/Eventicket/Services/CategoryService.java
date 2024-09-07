@@ -1,8 +1,6 @@
 package com.Eventicket.Services;
 
-import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.CategoryEntity;
-import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
