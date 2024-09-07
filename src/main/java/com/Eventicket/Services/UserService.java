@@ -3,6 +3,7 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
+import com.Eventicket.Exception.User.UserNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.UserRepository;
@@ -73,16 +74,7 @@ public class UserService {
     }
 
     public UserEntity findById(Long id) {
-        try {
-            return userRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Usuário não encontrado com o ID: " + id);
-                        return new RuntimeException("Usuário não encontrado");
-                    });
-        } catch (Exception e) {
-            System.out.println("Erro ao buscar o usuário: " + e.getMessage());
-            return new UserEntity();
-        }
+            return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
     }
 
     public List<EventEntity> buscarEventosDaMesmaCidade (Long idUsuario){

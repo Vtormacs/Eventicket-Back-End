@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, @PathVariable Long id){
+    public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, @PathVariable Long id) {
         try {
             return ResponseEntity.ok(userService.update(userEntity, id));
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id){
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(userService.delete(id));
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<UserEntity>> findAll(){
+    public ResponseEntity<List<UserEntity>> findAll() {
         try {
             return ResponseEntity.ok(userService.findAll());
         } catch (Exception e) {
@@ -54,12 +54,8 @@ public class UserController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<UserEntity> findById(@PathVariable Long id){
-        try {
-            return ResponseEntity.ok(userService.findById(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<UserEntity> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @GetMapping("/buscarEventos/{idUsuario}")

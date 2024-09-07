@@ -3,6 +3,7 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
+import com.Eventicket.Exception.Event.EventNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.EventRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -72,16 +73,7 @@ public class EventService {
     }
 
     public EventEntity findById(Long id) {
-        try {
-            return eventRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Evento não encontrado com o ID: " + id);
-                        return new RuntimeException("Evento não encontrado");
-                    });
-        } catch (Exception e) {
-            System.out.println("Erro ao buscar o evento: " + e.getMessage());
-            return new EventEntity();
-        }
+        return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
     }
 
 }

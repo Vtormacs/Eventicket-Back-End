@@ -55,10 +55,6 @@ public class EventController {
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<EventEntity> findById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(eventService.findById(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(eventService.findById(id));
     }
 }
