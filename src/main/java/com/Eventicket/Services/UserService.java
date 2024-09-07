@@ -6,7 +6,6 @@ import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,7 @@ public class UserService {
 
     public UserEntity update(UserEntity userEntity, Long id) {
         try {
-            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("usuario não encontrado com o id: " + id));
+            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 
             userRepository.atualizarUsuario(id, userEntity.getNome(), userEntity.getCpf(), userEntity.getEmail(), userEntity.getSenha(), userEntity.getCelular());
 
@@ -77,7 +76,7 @@ public class UserService {
 
     public List<EventEntity> buscarEventosDaMesmaCidade (Long idUsuario){
         try {
-            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
 
             String cidade = usuario.getEndereco().getCidade();
 

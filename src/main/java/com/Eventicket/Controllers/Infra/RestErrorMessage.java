@@ -14,13 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RestErrorMessage {
 
-    private HttpStatus status;        // Código HTTP
-    private String mensagem;          // Mensagem amigável para o usuário
-    private String errorCode;         // Código de erro específico
-    private LocalDateTime timestamp;  // Data e hora do erro
-    private String detalhes;          // Detalhes adicionais sobre o erro
+    private HttpStatus status;
+    private String mensagem;
+    private String errorCode;
+    private LocalDateTime timestamp;
+    private String detalhes;
 
-    // Construtor padrão, inicializando o timestamp automaticamente
     public RestErrorMessage(HttpStatus status, String mensagem, String errorCode) {
         this.status = status;
         this.mensagem = mensagem;
