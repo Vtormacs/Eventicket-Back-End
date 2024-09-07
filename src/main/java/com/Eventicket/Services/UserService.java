@@ -3,16 +3,14 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
-import com.Eventicket.Exception.User.UserNotFoundException;
+import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
-import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {

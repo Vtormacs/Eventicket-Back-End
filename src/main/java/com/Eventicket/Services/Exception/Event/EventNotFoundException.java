@@ -1,4 +1,4 @@
-package com.Eventicket.Exception.Event;
+package com.Eventicket.Services.Exception.Event;
 
 public class EventNotFoundException extends RuntimeException {
 
