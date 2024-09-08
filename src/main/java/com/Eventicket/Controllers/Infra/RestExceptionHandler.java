@@ -2,6 +2,7 @@ package com.Eventicket.Controllers.Infra;
 
 import com.Eventicket.Services.Exception.Email.EmailSendException;
 import com.Eventicket.Services.Exception.Event.EventNotFoundException;
+import com.Eventicket.Services.Exception.User.UserCPFException;
 import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import com.Eventicket.Services.Exception.User.UserSaveException;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     // Exceção para erro ao salvar o usuário
     @ExceptionHandler(UserSaveException.class)
     public ResponseEntity<RestErrorMessage> handleUserSaveException(UserSaveException ex) {
+        RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.BAD_REQUEST).mensagem("Erro ao salvar o usuário.").errorCode("USER_SAVE_ERROR").detalhes(ex.getMessage()).timestamp(LocalDateTime.now()).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    // Exceção para erro CPF duplicado
+    @ExceptionHandler(UserCPFException.class)
+    public ResponseEntity<RestErrorMessage> handleUserCPFException(UserCPFException ex) {
         RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.BAD_REQUEST).mensagem("Erro ao salvar o usuário.").errorCode("USER_SAVE_ERROR").detalhes(ex.getMessage()).timestamp(LocalDateTime.now()).build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }

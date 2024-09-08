@@ -19,11 +19,7 @@ public class UserController {
 
     @PostMapping("/save")
     public ResponseEntity<UserEntity> save(@RequestBody UserEntity userEntity) {
-        try {
             return ResponseEntity.ok(userService.save(userEntity));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @PutMapping("/update/{id}")

@@ -4,11 +4,13 @@ import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.Exception.Email.EmailSendException;
+import com.Eventicket.Services.Exception.User.UserCPFException;
 import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.UserRepository;
 import com.Eventicket.Services.Exception.User.UserSaveException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +39,13 @@ public class UserService {
             return userEntity;
         } catch (EmailSendException e) {
             System.out.println("Erro ao enviar o e-mail: " + e.getMessage());
+            throw e;
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                System.out.println("CPF já existe no sistema: " + e.getMessage());
+                throw new UserCPFException();
+            }
+            System.out.println("Erro de integridade de dados: " + e.getMessage());
             throw e;
         } catch (Exception e) {
             System.out.println("Erro ao salvar o usuário: " + e.getMessage());
