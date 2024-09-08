@@ -20,9 +20,19 @@ public class UserService {
     @Autowired
     private AddresRepository addresRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public UserEntity save(UserEntity userEntity) {
         try {
-            return userRepository.save(userEntity);
+
+            userRepository.save(userEntity);
+
+            if (!userEntity.getEmail().isEmpty()){
+                emailService.enviaEmail(userEntity);
+            }
+
+            return userEntity;
         } catch (Exception e) {
             System.out.println("Erro ao salvar o usuário: " + e.getMessage());
             return new UserEntity();
