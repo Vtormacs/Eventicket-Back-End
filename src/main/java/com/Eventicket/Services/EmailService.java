@@ -2,6 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.Enums.StatusEmail;
+import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.EmailRepository;
 import com.Eventicket.Services.Exception.Email.EmailSendException;
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -42,12 +44,32 @@ public class EmailService {
         return emailEntity;
     }
 
+    public EmailEntity criarEmailVenda(UserEntity user, List<EventEntity> eventosComprados) {
+        EmailEntity emailEntity = new EmailEntity();
+        emailEntity.setOwnerRef(user.getId());
+        emailEntity.setEmailFrom(this.emailFrom);
+        emailEntity.setEmailTo(user.getEmail());
+        emailEntity.setSubject("Obrigado por sua compra no Eventicket! 🎉");
+
+        StringBuilder eventosNomes = new StringBuilder();
+        for (EventEntity evento : eventosComprados) {
+            eventosNomes.append("- ").append(evento.getNome()).append("\n");
+        }
+
+        emailEntity.setText("Olá " + user.getNome() + ",\n\n" +
+                "Muito obrigado por sua compra! Estamos felizes em informar que os ingressos para os seguintes eventos foram reservados com sucesso:\n\n" +
+                eventosNomes.toString() +
+                "\n\nSe precisar de mais alguma coisa, não hesite em nos contatar. Aproveite os eventos!\n\n" +
+                "Atenciosamente,\n" +
+                "Equipe Eventicket");
+
+        return emailEntity;
+    }
+
+
 
     @Async
-    public void enviaEmail(UserEntity user) {
-
-        EmailEntity emailEntity = criarEmail(user);
-
+    public void enviaEmail(EmailEntity emailEntity) {
         emailEntity.setSendDateEmail(LocalDateTime.now());
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -60,7 +82,7 @@ public class EmailService {
             emailEntity.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e) {
             emailEntity.setStatusEmail(StatusEmail.ERROR);
-            throw new EmailSendException("Erro ao enviar o e-mail para: " + user.getEmail(), e);
+            throw new EmailSendException("Erro ao enviar o e-mail para: " + emailEntity.getEmailTo(), e);
         } finally {
             emailRepository.save(emailEntity);
         }

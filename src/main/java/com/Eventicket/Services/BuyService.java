@@ -1,15 +1,14 @@
 package com.Eventicket.Services;
 
-import com.Eventicket.Entities.BuyEntity;
+import com.Eventicket.Entities.*;
 import com.Eventicket.Entities.Enums.StatusBuy;
 import com.Eventicket.Entities.Enums.StatusTicket;
-import com.Eventicket.Entities.EventEntity;
-import com.Eventicket.Entities.TicketEntity;
-import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.BuyRepository;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
 import com.Eventicket.Repositories.UserRepository;
+import com.Eventicket.Services.Exception.Event.EventNotFoundException;
+import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +31,16 @@ public class BuyService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public BuyEntity save(Long idUsuario, List<Long> idEventos) {
         try {
-            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
 
             List<EventEntity> eventos = eventRepository.findAllById(idEventos);
             if (eventos.isEmpty()) {
-                throw new RuntimeException("Eventos não encontrados");
+                throw new EventNotFoundException();
             }
 
             for (EventEntity eventEntity : eventos){
@@ -63,7 +65,13 @@ public class BuyService {
             }
 
             venda.setIngressos(ingressos);
-            return buyRepository.save(venda);
+
+            buyRepository.save(venda);
+
+            EmailEntity email = emailService.criarEmailVenda(usuario, eventos);
+            emailService.enviaEmail(email);
+
+            return venda;
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());
             throw new RuntimeException("Erro ao salvar a compra", e);

@@ -1,6 +1,7 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.AddresEntity;
+import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.Exception.Email.EmailSendException;
@@ -33,7 +34,8 @@ public class UserService {
             userRepository.save(userEntity);
 
             if (!userEntity.getEmail().isEmpty()) {
-                emailService.enviaEmail(userEntity);
+                EmailEntity email = emailService.criarEmail(userEntity);
+                emailService.enviaEmail(email);
             }
 
             return userEntity;
