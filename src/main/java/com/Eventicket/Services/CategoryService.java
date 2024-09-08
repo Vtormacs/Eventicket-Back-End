@@ -24,13 +24,11 @@ public class CategoryService {
 
     public CategoryEntity update(CategoryEntity categoryEntity, Long id) {
         try {
-            if (categoryRepository.findById(id).isPresent()) {
-                categoryEntity.setId(id);
-                return categoryRepository.save(categoryEntity);
-            } else {
-                System.out.println("Categoria não encontrada com o ID: " + id);
-                return new CategoryEntity();
-            }
+            categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("categoria n encontrada"));
+
+            categoryEntity.setId(id);
+
+            return categoryRepository.save(categoryEntity);
         } catch (Exception e) {
             System.out.println("Erro ao atualizar a categoria: " + e.getMessage());
             return new CategoryEntity();
@@ -39,12 +37,9 @@ public class CategoryService {
 
     public String delete(Long id) {
         try {
-            if (categoryRepository.findById(id).isPresent()) {
-                categoryRepository.deleteById(id);
-                return"Categoria deletada com sucesso!";
-            } else {
-                return"Categoria não encontrada";
-            }
+            categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Categoria n encontrada"));
+            categoryRepository.deleteById(id);
+            return "Categoria Deletada";
         } catch (Exception e) {
             System.out.println("Erro ao deletar a categoria: " + e.getMessage());
             return"Erro ao deletar a categoria";
@@ -72,6 +67,4 @@ public class CategoryService {
             return new CategoryEntity();
         }
     }
-
-
 }
