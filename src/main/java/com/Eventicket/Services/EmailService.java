@@ -4,11 +4,13 @@ import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.Enums.StatusEmail;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.EmailRepository;
+import com.Eventicket.Services.Exception.Email.EmailSendException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,7 +43,8 @@ public class EmailService {
     }
 
 
-    public EmailEntity enviaEmail(UserEntity user) {
+    @Async
+    public void enviaEmail(UserEntity user) {
 
         EmailEntity emailEntity = criarEmail(user);
 
@@ -57,8 +60,9 @@ public class EmailService {
             emailEntity.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e) {
             emailEntity.setStatusEmail(StatusEmail.ERROR);
+            throw new EmailSendException("Erro ao enviar o e-mail para: " + user.getEmail(), e);
         } finally {
-            return emailRepository.save(emailEntity);
+            emailRepository.save(emailEntity);
         }
     }
 }

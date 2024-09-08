@@ -3,9 +3,11 @@ package com.Eventicket.Services;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
+import com.Eventicket.Services.Exception.Email.EmailSendException;
 import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.UserRepository;
+import com.Eventicket.Services.Exception.User.UserSaveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +30,17 @@ public class UserService {
 
             userRepository.save(userEntity);
 
-            if (!userEntity.getEmail().isEmpty()){
+            if (!userEntity.getEmail().isEmpty()) {
                 emailService.enviaEmail(userEntity);
             }
 
             return userEntity;
+        } catch (EmailSendException e) {
+            System.out.println("Erro ao enviar o e-mail: " + e.getMessage());
+            throw e;
         } catch (Exception e) {
             System.out.println("Erro ao salvar o usuário: " + e.getMessage());
-            return new UserEntity();
+            throw new UserSaveException("Erro ao salvar o usuário", e);
         }
     }
 
@@ -81,10 +86,10 @@ public class UserService {
     }
 
     public UserEntity findById(Long id) {
-            return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
     }
 
-    public List<EventEntity> buscarEventosDaMesmaCidade (Long idUsuario){
+    public List<EventEntity> buscarEventosDaMesmaCidade(Long idUsuario) {
         try {
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
 
