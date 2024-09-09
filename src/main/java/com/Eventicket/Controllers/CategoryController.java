@@ -55,10 +55,6 @@ public class CategoryController {
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<CategoryEntity> findById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(categoryService.findById(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(categoryService.findById(id));
     }
 }

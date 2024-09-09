@@ -2,6 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.CategoryEntity;
 import com.Eventicket.Repositories.CategoryRepository;
+import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -95,9 +96,11 @@ class CategoryServiceTest {
     @Test
     @DisplayName("Buscar categoria por ID - Erro")
     void findByIdError() {
-        var retorno = categoryService.findById(2L);
+        when(categoryRepository.findById(2L)).thenReturn(Optional.empty());
 
-        assertEquals(null, retorno.getNome());
+        assertThrows(CategoryNotFoundException.class, () -> {
+            categoryService.findById(2L);
+        });
     }
 
     @Test

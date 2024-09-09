@@ -1,5 +1,6 @@
 package com.Eventicket.Controllers.Infra;
 
+import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
 import com.Eventicket.Services.Exception.Email.EmailSendException;
 import com.Eventicket.Services.Exception.Event.EventNotFoundException;
 import com.Eventicket.Services.Exception.User.UserCPFException;
@@ -56,5 +57,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<RestErrorMessage> handleUserCPFException(UserCPFException ex) {
         RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.BAD_REQUEST).mensagem("Erro ao salvar o usuário.").errorCode("USER_SAVE_ERROR").detalhes(ex.getMessage()).timestamp(LocalDateTime.now()).build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    // Categoria não encontrada
+    @ExceptionHandler(CategoryNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> categoriaNotFoundHandler(CategoryNotFoundException exception) {
+        RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.NOT_FOUND).mensagem(exception.getMessage()).errorCode("CATEGORY_NOT_FOUND").timestamp(LocalDateTime.now()).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 }

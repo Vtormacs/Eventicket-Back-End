@@ -2,6 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.CategoryEntity;
 import com.Eventicket.Repositories.CategoryRepository;
+import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,15 +57,6 @@ public class CategoryService {
     }
 
     public CategoryEntity findById(Long id) {
-        try {
-            return categoryRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Categoria não encontrada com o ID: " + id);
-                        return new RuntimeException("Categoria não encontrada");
-                    });
-        } catch (Exception e) {
-            System.out.println("Erro ao buscar a categoria: " + e.getMessage());
-            return new CategoryEntity();
-        }
+      return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException());
     }
 }
