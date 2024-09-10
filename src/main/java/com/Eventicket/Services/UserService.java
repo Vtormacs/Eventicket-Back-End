@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -111,5 +112,18 @@ public class UserService {
             System.out.println("Erro ao retornar a lista de usuários: " + e.getMessage());
             return List.of();
         }
+    }
+
+    public boolean validarConta(Long idUser, String hashRecebido) {
+        UserEntity usuario = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException());
+
+        String hashGerado = EmailService.generateHash(usuario.getNome(), usuario.getEmail());
+
+        if (hashGerado.equals(hashRecebido)) {
+            usuario.setAtivo(true);
+            userRepository.save(usuario);
+            return true;
+        }
+        return false;
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,11 +38,18 @@ public class EmailService {
         emailEntity.setEmailFrom(this.emailFrom);
         emailEntity.setEmailTo(user.getEmail());
         emailEntity.setSubject("Bem-vindo(a) ao Eventicket! 🎉");
+
+        String hash = generateHash(user.getNome(), user.getEmail());
+
+        String validationLink = "http://localhost:8080/user/validar-conta?idUser=" + user.getId() + "&hash=" + hash;
+
         emailEntity.setText("Olá " + user.getNome() + ",\n\n" +
-                "Estamos muito felizes em tê-lo(a) como parte da nossa comunidade! A partir de agora, você terá acesso a eventos incríveis e muitas facilidades no gerenciamento dos seus ingressos.\n\n" +
+                "Estamos muito felizes em tê-lo(a) como parte da nossa comunidade! Para completar o seu cadastro e ativar a sua conta, por favor clique no link abaixo:\n\n" +
+                validationLink + "\n\n" +
                 "Se precisar de qualquer coisa, não hesite em nos contatar.\n\n" +
                 "Atenciosamente,\n" +
                 "Equipe Eventicket");
+
         return emailEntity;
     }
 
@@ -66,8 +75,6 @@ public class EmailService {
         return emailEntity;
     }
 
-
-
     @Async
     public void enviaEmail(EmailEntity emailEntity) {
         emailEntity.setSendDateEmail(LocalDateTime.now());
@@ -85,6 +92,30 @@ public class EmailService {
             throw new EmailSendException("Erro ao enviar o e-mail para: " + emailEntity.getEmailTo(), e);
         } finally {
             emailRepository.save(emailEntity);
+        }
+    }
+
+    public static String generateHash(String nome, String email) {
+        try {
+
+            String concat = nome + email;
+
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            byte[] hashBytes = md.digest(concat.getBytes());
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 }
