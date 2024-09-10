@@ -57,4 +57,13 @@ public class EventController {
     public ResponseEntity<EventEntity> findById(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.findById(id));
     }
+
+    @GetMapping("/buscar-por-cidade/{cidade}")
+    public ResponseEntity<List<EventEntity>> buscarEventosPorCidade(@PathVariable String cidade) {
+        try {
+            return ResponseEntity.ok(eventService.buscarEventosPorCidade(cidade));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

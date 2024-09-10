@@ -1,7 +1,5 @@
 package com.Eventicket.Repositories;
 
-import com.Eventicket.Entities.Enums.CategoryTicket;
-import com.Eventicket.Entities.Enums.StatusTicket;
 import com.Eventicket.Entities.EventEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +16,8 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Transactional
     @Query("UPDATE event e SET e.nome = :nome, e.data = :data, e.descricao = :descricao, e.quantidade = :quantidade WHERE e.id = :id")
     void atualizarEvento(@Param("id") Long id, @Param("nome") String nome, @Param("data") Date data, @Param("descricao") String descricao, @Param("quantidade") Integer quantidade);
+
+    List<EventEntity> findByEndereco_Cidade(String cidade);
 
     //@Modifying
     //@Transactional

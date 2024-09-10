@@ -74,4 +74,13 @@ public class EventService {
         return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
     }
 
+    public List<EventEntity> buscarEventosPorCidade(String cidade) {
+        try {
+            return eventRepository.findByEndereco_Cidade(cidade);
+        } catch (Exception e) {
+            System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
+            return List.of();
+        }
+    }
+
 }
