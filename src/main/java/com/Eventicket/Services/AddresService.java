@@ -39,12 +39,9 @@ public class AddresService {
 
     public String delete(Long id) {
         try {
-            if (addresRepository.findById(id).isPresent()) {
-                addresRepository.deleteById(id);
-                return "Endereço deletado com sucesso!";
-            } else {
-                return "Endereço não encontrado";
-            }
+            addresRepository.findById(id).orElseThrow(() -> new RuntimeException("endereco n encontrado"));
+            addresRepository.deleteById(id);
+            return "Endereco Deletado!";
         } catch (Exception e) {
             System.out.println("Erro ao deletar o endereço: " + e.getMessage());
             return "Erro ao deletar o endereço";
