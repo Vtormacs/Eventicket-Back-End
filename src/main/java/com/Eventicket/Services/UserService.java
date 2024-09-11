@@ -5,11 +5,9 @@ import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.Exception.Email.EmailSendException;
-import com.Eventicket.Services.Exception.User.UserCPFException;
-import com.Eventicket.Services.Exception.User.UserNotFoundException;
+import com.Eventicket.Services.Exception.User.*;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.UserRepository;
-import com.Eventicket.Services.Exception.User.UserSaveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -68,23 +66,22 @@ public class UserService {
             }
 
             return usuarioExistente;
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao atualizar o usuário: " + e.getMessage());
-            return new UserEntity();
+            throw new UserUpdateException("Erro ao atualizar a usuario: " + e.getMessage());
         }
     }
 
     public String delete(Long id) {
         try {
-            if (userRepository.findById(id).isPresent()) {
-                userRepository.deleteById(id);
-                return "Usuário deletado com sucesso!";
-            } else {
-                return "Usuário não encontrado";
-            }
+            userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+            userRepository.deleteById(id);
+            return "Usuario Deletado";
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao deletar o usuário: " + e.getMessage());
-            return "Erro ao deletar o usuário";
+            throw new UserDeleteException("Erro ao deletar o usuário: " + e.getMessage());
         }
     }
 
@@ -92,8 +89,7 @@ public class UserService {
         try {
             return userRepository.findAll();
         } catch (Exception e) {
-            System.out.println("Erro ao retornar a lista de usuários: " + e.getMessage());
-            return List.of();
+            throw new UserFindAllException("Erro ao retornar a lista de usuarios" + e.getMessage());
         }
     }
 
@@ -108,9 +104,10 @@ public class UserService {
             String cidade = usuario.getEndereco().getCidade();
 
             return userRepository.buscarEventosDaMesmaCidade(cidade);
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao retornar a lista de usuários: " + e.getMessage());
-            return List.of();
+            throw new buscarEventosDaMesmaCidadeException("Erro ao retornar a lista de usuários: " + e.getMessage());
         }
     }
 
