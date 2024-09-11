@@ -46,4 +46,11 @@ public class CategoryExceptionHandler extends ResponseEntityExceptionHandler {
         RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).mensagem("Erro ao buscar todas as categorias: " + exception.getMessage()).errorCode("CATEGORY_FIND_ALL_ERROR").timestamp(LocalDateTime.now()).build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
+
+    // Exceção genérica
+    @ExceptionHandler(Exception.class)
+    private ResponseEntity<RestErrorMessage> globalExceptionHandler(Exception exception) {
+        RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).mensagem("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.").errorCode("INTERNAL_SERVER_ERROR").detalhes(exception.getMessage()).timestamp(LocalDateTime.now()).build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
+    }
 }

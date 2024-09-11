@@ -89,7 +89,7 @@ public class EmailService {
             emailEntity.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e) {
             emailEntity.setStatusEmail(StatusEmail.ERROR);
-            throw new EmailSendException("Erro ao enviar o e-mail para: " + emailEntity.getEmailTo(), e);
+            throw new EmailSendException("Erro ao enviar o e-mail para: " + emailEntity.getEmailTo());
         } finally {
             emailRepository.save(emailEntity);
         }
