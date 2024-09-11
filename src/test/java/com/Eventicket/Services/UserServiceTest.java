@@ -48,12 +48,10 @@ class UserServiceTest {
         userId = user.getId();
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        //findAll
         List<UserEntity> users = new ArrayList<>();
         users.add(user);
         when(userRepository.findAll()).thenReturn(users);
 
-        // Mock save
         when(userRepository.save(user)).thenReturn(user);
     }
 
