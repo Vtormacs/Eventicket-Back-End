@@ -6,8 +6,4 @@ public class EventNotFoundException extends RuntimeException {
         super("Evento nao encontrado");
     }
 
-    public EventNotFoundException(String mensagem) {
-        super(mensagem);
-    }
-
 }

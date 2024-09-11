@@ -2,7 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.CategoryEntity;
 import com.Eventicket.Repositories.CategoryRepository;
-import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
+import com.Eventicket.Services.Exception.Category.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,32 +18,33 @@ public class CategoryService {
         try {
             return categoryRepository.save(categoryEntity);
         } catch (Exception e) {
-            System.out.println("Erro ao salvar a categoria: " + e.getMessage());
-            return new CategoryEntity();
+            throw new CategorySaveException("Erro ao salvar a categoreia" + e.getMessage());
         }
     }
 
     public CategoryEntity update(CategoryEntity categoryEntity, Long id) {
         try {
-            categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("categoria n encontrada"));
+            categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Categoria n encontrada no banco"));
 
             categoryEntity.setId(id);
 
             return categoryRepository.save(categoryEntity);
+        } catch (CategoryNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao atualizar a categoria: " + e.getMessage());
-            return new CategoryEntity();
+            throw new CategoryUpdateException("Erro ao atualizar a categoria: " + e.getMessage());
         }
     }
 
     public String delete(Long id) {
         try {
-            categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Categoria n encontrada"));
+            categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Categoria n encontrada"));
             categoryRepository.deleteById(id);
             return "Categoria Deletada";
+        } catch (CategoryNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao deletar a categoria: " + e.getMessage());
-            return"Erro ao deletar a categoria";
+            throw new CategoryDeleteException("Erro ao deletar a categoria: " + e.getMessage());
         }
     }
 
@@ -51,12 +52,11 @@ public class CategoryService {
         try {
             return categoryRepository.findAll();
         } catch (Exception e) {
-            System.out.println("Erro ao retornar a lista de categorias: " + e.getMessage());
-            return List.of();
+            throw new CategoryFindAllException("Erro ao retornar a lista de categorias: " + e.getMessage());
         }
     }
 
     public CategoryEntity findById(Long id) {
-      return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException());
+        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Categoria n encontrada no banco"));
     }
 }

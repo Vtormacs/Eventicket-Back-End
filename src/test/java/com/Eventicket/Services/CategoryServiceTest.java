@@ -2,7 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.CategoryEntity;
 import com.Eventicket.Repositories.CategoryRepository;
-import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
+import com.Eventicket.Services.Exception.Category.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class CategoryServiceTest {
     CategoryRepository categoryRepository;
 
     @Autowired
-    CategoryService  categoryService;
+    CategoryService categoryService;
 
     Long id;
 
@@ -64,7 +64,7 @@ class CategoryServiceTest {
     @Test
     @DisplayName("Salvar categoria")
     void save() {
-        CategoryEntity category = new CategoryEntity(1l,"Teste", null);
+        CategoryEntity category = new CategoryEntity(1l, "Teste", null);
 
         when(categoryRepository.save(category)).thenReturn(category);
 
@@ -108,9 +108,9 @@ class CategoryServiceTest {
     void findAllError() {
         when(categoryRepository.findAll()).thenThrow(new RuntimeException("Erro ao buscar categorias"));
 
-        var retorno = categoryService.findAll();
-
-        assertEquals(0, retorno.size());
+        assertThrows(CategoryFindAllException.class, () -> {
+            categoryService.findAll();
+        });
     }
 
     @Test
@@ -120,10 +120,10 @@ class CategoryServiceTest {
 
         when(categoryRepository.save(category)).thenThrow(new RuntimeException("Erro ao salvar"));
 
-        var retorno = categoryService.save(category);
-
-        assertEquals(null, retorno.getNome());
+        assertThrows(CategorySaveException.class, () -> {
+            categoryService.save(category);});
     }
+
 
     @Test
     @DisplayName("Atualizar categoria - Erro ao encontrar ID")
@@ -132,9 +132,9 @@ class CategoryServiceTest {
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
-        var retorno = categoryService.update(atualizado, 1L);
-
-        assertEquals(null, retorno.getNome()); // Categoria vazia se o ID não for encontrado
+        assertThrows(CategoryNotFoundException.class, () ->{
+            categoryService.update(atualizado,1L);
+        });
     }
 
     @Test
@@ -144,9 +144,9 @@ class CategoryServiceTest {
 
         when(categoryRepository.save(atualizado)).thenThrow(new RuntimeException("Erro ao atualizar"));
 
-        var retorno = categoryService.update(atualizado, this.id);
-
-        assertEquals(null, retorno.getNome());
+        assertThrows(CategoryUpdateException.class, () ->{
+            categoryService.update(atualizado, this.id);
+        });
     }
 
     @Test
@@ -154,19 +154,20 @@ class CategoryServiceTest {
     void deleteNotFoundError() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
-        var retorno = categoryService.delete(1L);
-
-        assertEquals("Erro ao deletar a categoria", retorno);
+        assertThrows(CategoryNotFoundException.class, () -> {
+            categoryService.delete(1L);
+        });
     }
 
     @Test
     @DisplayName("Deletar categoria - Erro ao deletar")
     void deleteError() {
         when(categoryRepository.findById(this.id)).thenReturn(Optional.of(new CategoryEntity(this.id, "Games", null)));
+
         doThrow(new RuntimeException("Erro ao deletar")).when(categoryRepository).deleteById(this.id);
 
-        var retorno = categoryService.delete(this.id);
-
-        assertEquals("Erro ao deletar a categoria", retorno);
+        assertThrows(CategoryDeleteException.class, () -> {
+            categoryService.delete(this.id);
+        });
     }
 }

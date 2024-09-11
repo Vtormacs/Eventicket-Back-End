@@ -1,6 +1,5 @@
 package com.Eventicket.Controllers.Infra;
 
-import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
 import com.Eventicket.Services.Exception.Email.EmailSendException;
 import com.Eventicket.Services.Exception.Event.EventNotFoundException;
 import com.Eventicket.Services.Exception.User.UserCPFException;
@@ -15,34 +14,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 
     // Usuário não encontrado
     @ExceptionHandler(UserNotFoundException.class)
     private ResponseEntity<RestErrorMessage> userNotFoundHandler(UserNotFoundException exception) {
         RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.NOT_FOUND).mensagem(exception.getMessage()).errorCode("USER_NOT_FOUND").timestamp(LocalDateTime.now()).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
-    }
-
-    // Evento não encontrado
-    @ExceptionHandler(EventNotFoundException.class)
-    private ResponseEntity<RestErrorMessage> eventNotFoundHandler(EventNotFoundException exception) {
-        RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.NOT_FOUND).mensagem(exception.getMessage()).errorCode("EVENT_NOT_FOUND").timestamp(LocalDateTime.now()).build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
-    }
-
-    // Exceção genérica
-    @ExceptionHandler(Exception.class)
-    private ResponseEntity<RestErrorMessage> globalExceptionHandler(Exception exception) {
-        RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).mensagem("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.").errorCode("INTERNAL_SERVER_ERROR").detalhes(exception.getMessage()).timestamp(LocalDateTime.now()).build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
-    }
-
-    // Exceção para erro no envio de e-mail
-    @ExceptionHandler(EmailSendException.class)
-    public ResponseEntity<RestErrorMessage> handleEmailSendException(EmailSendException ex) {
-        RestErrorMessage erro = RestErrorMessage.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).mensagem("Erro ao enviar e-mail.").errorCode("EMAIL_SEND_ERROR").detalhes(ex.getMessage()).timestamp(LocalDateTime.now()).build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
 
     // Exceção para erro ao salvar o usuário
