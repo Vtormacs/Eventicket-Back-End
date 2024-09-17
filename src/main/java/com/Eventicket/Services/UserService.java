@@ -1,17 +1,17 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.AddresEntity;
+import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
+import com.Eventicket.Services.Exception.Email.EmailSendException;
+import com.Eventicket.Services.Exception.User.*;
 import com.Eventicket.Repositories.AddresRepository;
-import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -22,18 +22,38 @@ public class UserService {
     @Autowired
     private AddresRepository addresRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public UserEntity save(UserEntity userEntity) {
         try {
-            return userRepository.save(userEntity);
+            userRepository.save(userEntity);
+
+            if (!userEntity.getEmail().isEmpty()) {
+                EmailEntity email = emailService.criarEmail(userEntity);
+                emailService.enviaEmail(email);
+            }
+
+            return userEntity;
+        } catch (EmailSendException e) {
+            System.out.println("Erro ao enviar o e-mail: " + e.getMessage());
+            throw e;
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                System.out.println("CPF já existe no sistema: " + e.getMessage());
+                throw new UserCPFException();
+            }
+            System.out.println("Erro de integridade de dados: " + e.getMessage());
+            throw e;
         } catch (Exception e) {
             System.out.println("Erro ao salvar o usuário: " + e.getMessage());
-            return new UserEntity();
+            throw new UserSaveException("Erro ao salvar o usuário", e);
         }
     }
 
     public UserEntity update(UserEntity userEntity, Long id) {
         try {
-            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("usuario não encontrado com o id: " + id));
+            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 
             userRepository.atualizarUsuario(id, userEntity.getNome(), userEntity.getCpf(), userEntity.getEmail(), userEntity.getSenha(), userEntity.getCelular());
 
@@ -43,23 +63,22 @@ public class UserService {
             }
 
             return usuarioExistente;
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao atualizar o usuário: " + e.getMessage());
-            return new UserEntity();
+            throw new UserUpdateException("Erro ao atualizar a usuario: " + e.getMessage());
         }
     }
 
     public String delete(Long id) {
         try {
-            if (userRepository.findById(id).isPresent()) {
-                userRepository.deleteById(id);
-                return "Usuário deletado com sucesso!";
-            } else {
-                return "Usuário não encontrado";
-            }
+            userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+            userRepository.deleteById(id);
+            return "Usuario Deletado";
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao deletar o usuário: " + e.getMessage());
-            return "Erro ao deletar o usuário";
+            throw new UserDeleteException("Erro ao deletar o usuário: " + e.getMessage());
         }
     }
 
@@ -67,34 +86,38 @@ public class UserService {
         try {
             return userRepository.findAll();
         } catch (Exception e) {
-            System.out.println("Erro ao retornar a lista de usuários: " + e.getMessage());
-            return List.of();
+            throw new UserFindAllException("Erro ao retornar a lista de usuarios" + e.getMessage());
         }
     }
 
     public UserEntity findById(Long id) {
-        try {
-            return userRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Usuário não encontrado com o ID: " + id);
-                        return new RuntimeException("Usuário não encontrado");
-                    });
-        } catch (Exception e) {
-            System.out.println("Erro ao buscar o usuário: " + e.getMessage());
-            return new UserEntity();
-        }
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
     }
 
-    public List<EventEntity> buscarEventosDaMesmaCidade (Long idUsuario){
+    public List<EventEntity> buscarEventosDaMesmaCidade(Long idUsuario) {
         try {
-            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("usuario n encontrado"));
+            UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
 
             String cidade = usuario.getEndereco().getCidade();
 
             return userRepository.buscarEventosDaMesmaCidade(cidade);
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao retornar a lista de usuários: " + e.getMessage());
-            return List.of();
+            throw new buscarEventosDaMesmaCidadeException("Erro ao retornar a lista de usuários: " + e.getMessage());
         }
+    }
+
+    public boolean validarConta(Long idUser, String hashRecebido) {
+        UserEntity usuario = userRepository.findById(idUser).orElseThrow(() -> new UserNotFoundException());
+
+        String hashGerado = EmailService.generateHash(usuario.getNome(), usuario.getEmail());
+
+        if (hashGerado.equals(hashRecebido)) {
+            usuario.setAtivo(true);
+            userRepository.save(usuario);
+            return true;
+        }
+        return false;
     }
 }

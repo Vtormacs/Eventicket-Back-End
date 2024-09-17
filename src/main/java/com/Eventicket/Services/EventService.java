@@ -2,7 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EventEntity;
-import com.Eventicket.Entities.TicketEntity;
+import com.Eventicket.Services.Exception.Event.EventNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.EventRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventService {
@@ -26,7 +25,7 @@ public class EventService {
             return eventRepository.save(eventEntity);
         } catch (Exception e) {
             System.out.println("Erro ao salvar o evento: " + e.getMessage());
-            return new EventEntity();
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -40,25 +39,25 @@ public class EventService {
             if (novoEndereco != null && eventoExistente.getEndereco() != null) {
                 addresRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
             }
-
             return eventoExistente;
+        } catch (EntityNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             System.err.println("Erro ao atualizar o evento: " + e.getMessage());
-            return null;
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     public String delete(Long id) {
         try {
-            if (eventRepository.findById(id).isPresent()) {
-                eventRepository.deleteById(id);
-                return "Evento deletado cm sucesso!";
-            } else {
-                return "Evento não encontrado";
-            }
+            eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
+            eventRepository.deleteById(id);
+            return "Evento deletado";
+        } catch (EventNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             System.out.println("Erro ao deletar o evento" + e.getMessage());
-            return "Erro ao deletar o evento";
+            throw new RuntimeException("Erro ao deletar evento");
         }
     }
 
@@ -67,20 +66,20 @@ public class EventService {
             return eventRepository.findAll();
         } catch (Exception e) {
             System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
-            return List.of();
+            throw new RuntimeException("Erro ao listar eventos");
         }
     }
 
     public EventEntity findById(Long id) {
+        return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
+    }
+
+    public List<EventEntity> buscarEventosPorCidade(String cidade) {
         try {
-            return eventRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Evento não encontrado com o ID: " + id);
-                        return new RuntimeException("Evento não encontrado");
-                    });
+            return eventRepository.findByEndereco_Cidade(cidade);
         } catch (Exception e) {
-            System.out.println("Erro ao buscar o evento: " + e.getMessage());
-            return new EventEntity();
+            System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
+            throw new RuntimeException("Erro ao listar eventos");
         }
     }
 

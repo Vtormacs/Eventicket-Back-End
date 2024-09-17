@@ -58,7 +58,9 @@ public class UserEntity {
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Número de celular inválido")
     private String celular;
 
-    @ManyToOne(cascade = CascadeType.ALL) // Cascata para salvar o endereço automaticamente
+    Boolean ativo = false;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
     @JsonIgnoreProperties("usuarios")
     private AddresEntity endereco;
