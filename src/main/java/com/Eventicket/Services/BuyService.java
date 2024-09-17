@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BuyService {
@@ -38,10 +39,10 @@ public class BuyService {
         try {
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
 
-            List<EventEntity> eventos = eventRepository.findAllById(idEventos);
-            if (eventos.isEmpty()) {
-                throw new EventNotFoundException();
-            }
+            List<EventEntity> eventos = idEventos.stream().map(id -> {
+                EventEntity evento = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
+                return evento;
+            }).collect(Collectors.toList());
 
             for (EventEntity eventEntity : eventos) {
                 if (eventEntity.getQuantidade() <= 0) {
