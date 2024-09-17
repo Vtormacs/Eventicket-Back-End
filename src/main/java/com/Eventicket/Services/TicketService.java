@@ -21,7 +21,7 @@ public class TicketService {
             return ticketRepository.save(ticketEntity);
         } catch (Exception e) {
             System.out.println("Erro ao salvar o ticket: " + e.getMessage());
-            return new TicketEntity();
+            throw new RuntimeException("Erro ao salvat ticket");
         }
     }
 
@@ -36,10 +36,9 @@ public class TicketService {
             }
         } catch (Exception e) {
             System.out.println("Erro ao atualizar o ticket: " + e.getMessage());
-            return new TicketEntity();
+            throw new RuntimeException("Atualizar ticket");
         }
     }
-
 
     public String delete(Long id) {
         try {
@@ -50,44 +49,40 @@ public class TicketService {
                 return "Ticket não encontrado";
             }
         } catch (Exception e) {
-            System.out.println("Erro ao deletar o ticket: " + e.getMessage());
-            return "Erro ao deletar o ticket";
+            throw new RuntimeException("Erro ao deletar ticket");
         }
     }
-
 
     public List<TicketEntity> findAll() {
         try {
             return ticketRepository.findAll();
         } catch (Exception e) {
             System.out.println("Erro ao retornar a lista de tickets: " + e.getMessage());
-            return List.of();
+            throw new RuntimeException("Erro ao retornar a lista de tickets");
         }
     }
 
     public TicketEntity findById(Long id) {
         try {
-            return ticketRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Ticket não encontrado com o ID: " + id);
-                        return new RuntimeException("Ticket não encontrado");
-                    });
+            return ticketRepository.findById(id).orElseThrow(() -> {
+                System.out.println("Ticket não encontrado com o ID: " + id);
+                return new RuntimeException("Ticket não encontrado");
+            });
         } catch (Exception e) {
             System.out.println("Erro ao buscar o ticket" + e.getMessage());
-            return new TicketEntity();
+            throw new RuntimeException(e.getCause());
         }
     }
 
-    // futuramente pode receber o novo status como parametro para nao mudar apenas para usado
-    public TicketEntity changeStatus(Long id){
+    public TicketEntity changeStatus(Long id) {
         try {
             TicketEntity ingresso = ticketRepository.findById(id).orElseThrow(() -> new RuntimeException("Ingresso não encontrado"));
             ingresso.setStatusTicket(StatusTicket.USADO);
 
             return ticketRepository.save(ingresso);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Erro ao alterar status do ticket" + e.getMessage());
-            return new TicketEntity();
+            throw new RuntimeException("Erro ao alterar status do ticket");
         }
     }
 }

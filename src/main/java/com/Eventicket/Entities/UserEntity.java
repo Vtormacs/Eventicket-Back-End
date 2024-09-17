@@ -60,7 +60,7 @@ public class UserEntity {
 
     Boolean ativo = false;
 
-    @ManyToOne(cascade = CascadeType.ALL) // Cascata para salvar o endereço automaticamente
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
     @JsonIgnoreProperties("usuarios")
     private AddresEntity endereco;

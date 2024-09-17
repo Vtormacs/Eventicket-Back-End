@@ -97,7 +97,6 @@ public class EmailService {
 
     public static String generateHash(String nome, String email) {
         try {
-
             String concat = nome + email;
 
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -112,7 +111,6 @@ public class EmailService {
                 }
                 hexString.append(hex);
             }
-
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);

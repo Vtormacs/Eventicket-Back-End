@@ -11,9 +11,7 @@ import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -29,7 +27,6 @@ public class UserService {
 
     public UserEntity save(UserEntity userEntity) {
         try {
-
             userRepository.save(userEntity);
 
             if (!userEntity.getEmail().isEmpty()) {

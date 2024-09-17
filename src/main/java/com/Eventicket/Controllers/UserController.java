@@ -51,7 +51,6 @@ public class UserController {
     @GetMapping("/validar-conta")
     public ResponseEntity<String> validarConta(@RequestParam Long idUser, @RequestParam String hash) {
         boolean isValid = userService.validarConta(idUser, hash);
-
         if (isValid) {
             return ResponseEntity.ok("Conta validada com sucesso!");
         } else {
