@@ -21,6 +21,7 @@ import java.util.List;
 @Setter
 @Entity(name = "event")
 @Table(name = "event")
+@JsonIgnoreProperties({"ingressos"})
 public class EventEntity {
 
     @Id

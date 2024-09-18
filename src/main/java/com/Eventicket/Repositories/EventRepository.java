@@ -24,4 +24,8 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     //@Transactional
     //@Query("UPDATE ticket t SET t.preco = :preco, t.statusTicket = :statusTicket, t.categoryTicket = :categoryTicket WHERE t.id = :id")
     //void atualizarIngresso(@Param("id") Long id, @Param("preco") Double preco,  @Param("statusTicket") StatusTicket statusTicket, @Param("categoryTicket") CategoryTicket categoryTicket);
+
+    @Query(value = "SELECT * FROM event WHERE quantidade > 0", nativeQuery = true)
+    List<EventEntity> eventosDisponiveis();
+
 }

@@ -66,4 +66,13 @@ public class EventController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/eventos-disponiveis")
+    public ResponseEntity<List<EventEntity>> eventosDisponiveis() {
+        try {
+            return ResponseEntity.ok(eventService.eventosDisponiveis());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

@@ -83,4 +83,13 @@ public class EventService {
         }
     }
 
+    public List<EventEntity> eventosDisponiveis(){
+        try {
+            return eventRepository.eventosDisponiveis();
+        } catch (Exception e) {
+            System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
+            throw new RuntimeException("Erro ao listar eventos");
+        }
+    }
+
 }
