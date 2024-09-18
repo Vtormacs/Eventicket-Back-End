@@ -5,6 +5,8 @@ import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,26 +94,29 @@ public class TicketService {
         }
     }
 
-    public void changeStatusToExpirado(){
+    @PostConstruct
+    public void changeStatusToExpirado() {
         try {
             List<EventEntity> eventos = eventRepository.findAll();
             LocalDate dataAtual = LocalDate.now();
 
-            for (EventEntity evento : eventos){
+            for (EventEntity evento : eventos) {
                 LocalDate dataEvento = evento.getData();
 
                 System.out.println("Data do evento = " + dataEvento + " Data atual = " + dataAtual);
-                if (dataEvento.isBefore(dataAtual)){
+                if (dataEvento.isBefore(dataAtual)) {
                     List<TicketEntity> ingressos = evento.getIngressos();
-                    for (TicketEntity ingresso : ingressos){
-                        if (ingresso.getStatusTicket() == StatusTicket.VALIDO){
+                    for (TicketEntity ingresso : ingressos) {
+                        if (ingresso.getStatusTicket() == StatusTicket.VALIDO) {
                             ingresso.setStatusTicket(StatusTicket.EXPIRADO);
+                            ticketRepository.save(ingresso);
                         }
                     }
                 }
             }
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao mudar status dos ingressos: " + e.getMessage(), e);
         }
     }
 

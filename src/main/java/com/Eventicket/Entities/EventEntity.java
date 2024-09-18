@@ -66,6 +66,6 @@ public class EventEntity {
     @JsonIgnoreProperties("events")
     private Set<CategoryEntity> categories;
 
-    @OneToMany(mappedBy = "evento")
+    @OneToMany(mappedBy = "evento", fetch = FetchType.EAGER)
     private List<TicketEntity> ingressos;
 }
