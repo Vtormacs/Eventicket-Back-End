@@ -8,6 +8,9 @@ import com.Eventicket.Repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Executable;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -15,6 +18,9 @@ public class TicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     public TicketEntity save(TicketEntity ticketEntity) {
         try {
@@ -74,7 +80,7 @@ public class TicketService {
         }
     }
 
-    public TicketEntity changeStatus(Long id) {
+    public TicketEntity changeStatusToUsado(Long id) {
         try {
             TicketEntity ingresso = ticketRepository.findById(id).orElseThrow(() -> new RuntimeException("Ingresso não encontrado"));
             ingresso.setStatusTicket(StatusTicket.USADO);
@@ -85,4 +91,28 @@ public class TicketService {
             throw new RuntimeException("Erro ao alterar status do ticket");
         }
     }
+
+    public void changeStatusToExpirado(){
+        try {
+            List<EventEntity> eventos = eventRepository.findAll();
+            LocalDate dataAtual = LocalDate.now();
+
+            for (EventEntity evento : eventos){
+                LocalDate dataEvento = evento.getData();
+
+                System.out.println("Data do evento = " + dataEvento + " Data atual = " + dataAtual);
+                if (dataEvento.isBefore(dataAtual)){
+                    List<TicketEntity> ingressos = evento.getIngressos();
+                    for (TicketEntity ingresso : ingressos){
+                        if (ingresso.getStatusTicket() == StatusTicket.VALIDO){
+                            ingresso.setStatusTicket(StatusTicket.EXPIRADO);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 }

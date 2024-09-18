@@ -25,6 +25,9 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private TicketService ticketService;
+
     public UserEntity save(UserEntity userEntity) {
         try {
             userRepository.save(userEntity);
@@ -84,6 +87,7 @@ public class UserService {
 
     public List<UserEntity> findAll() {
         try {
+            ticketService.changeStatusToExpirado();
             return userRepository.findAll();
         } catch (Exception e) {
             throw new UserFindAllException("Erro ao retornar a lista de usuarios" + e.getMessage());
@@ -91,6 +95,7 @@ public class UserService {
     }
 
     public UserEntity findById(Long id) {
+        ticketService.changeStatusToExpirado();
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
     }
 
