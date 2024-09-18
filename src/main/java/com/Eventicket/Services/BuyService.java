@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,42 +37,45 @@ public class BuyService {
     @Autowired
     private EmailService emailService;
 
-    public BuyEntity save(Long idUsuario, List<Long> idEventos) {
+    public BuyEntity save(Long idUsuario, Map<Long, Integer> carrinho) {
         try {
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
-
-            List<EventEntity> eventos = idEventos.stream().map(id -> {
-                EventEntity evento = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
-                return evento;
-            }).collect(Collectors.toList());
-
-            for (EventEntity eventEntity : eventos) {
-                if (eventEntity.getQuantidade() <= 0) {
-                    throw new RuntimeException("A capacidade dos eventos já está no limite");
-                }
-            }
-
-            Double total = eventos.stream().mapToDouble(EventEntity::getPrecoDoIngresso).sum();
-
+            LocalDate dataAtual = LocalDate.now();
+            Double total = 0.0;
+            List<TicketEntity> ingressos = new ArrayList<>();
             BuyEntity venda = new BuyEntity(Instant.now(), total, StatusBuy.PAGO, usuario);
             venda = buyRepository.save(venda);
 
-            List<TicketEntity> ingressos = new ArrayList<>();
-            for (EventEntity evento : eventos) {
-                TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, evento, venda);
-                ingresso = ticketRepository.save(ingresso);
-                ingressos.add(ingresso);
-                int quantidade = evento.getQuantidade();
-                quantidade -= 1;
-                evento.setQuantidade(quantidade);
+            for (Map.Entry<Long, Integer> compra : carrinho.entrySet()) {
+                Long idEvento = compra.getKey();
+                Integer quantidadeCompra = compra.getValue();
+
+                EventEntity eventEntity = eventRepository.findById(idEvento).orElseThrow(() -> new EventNotFoundException());
+
+                if (eventEntity.getQuantidade() <= 0) {
+                    throw new RuntimeException("A capacidade dos eventos já está no limite");
+                }
+                if (eventEntity.getData().isBefore(dataAtual)){
+                    throw new RuntimeException("O evento já passou!");
+                }
+
+                for (int i = 0; i < quantidadeCompra; i++){
+                    TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, eventEntity, venda);
+                    ingressos.add(ticketRepository.save(ingresso));
+                }
+
+                total += quantidadeCompra * eventEntity.getPrecoDoIngresso();
+
+                eventEntity.setQuantidade(eventEntity.getQuantidade() - quantidadeCompra);
+
             }
 
             venda.setIngressos(ingressos);
-
+            venda.setTotal(total);
             buyRepository.save(venda);
 
-            EmailEntity email = emailService.criarEmailVenda(usuario, eventos);
-            emailService.enviaEmail(email);
+//            EmailEntity email = emailService.criarEmailVenda(usuario, eventos);
+//            emailService.enviaEmail(email);
 
             return venda;
         } catch (Exception e) {
