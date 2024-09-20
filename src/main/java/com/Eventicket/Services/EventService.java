@@ -25,13 +25,13 @@ public class EventService {
             return eventRepository.save(eventEntity);
         } catch (Exception e) {
             System.out.println("Erro ao salvar o evento: " + e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Erro ao salvar o evento");
         }
     }
 
     public EventEntity update(EventEntity eventEntity, Long id) {
         try {
-            EventEntity eventoExistente = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento não encontrado com o id: " + id));
+            EventEntity eventoExistente = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
 
             eventRepository.atualizarEvento(id, eventEntity.getNome(), eventEntity.getData(), eventEntity.getDescricao(), eventEntity.getQuantidade());
 
@@ -40,7 +40,7 @@ public class EventService {
                 addresRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
             }
             return eventoExistente;
-        } catch (EntityNotFoundException e) {
+        } catch (EventNotFoundException e) {
             throw e;
         } catch (Exception e) {
             System.err.println("Erro ao atualizar o evento: " + e.getMessage());
@@ -83,7 +83,7 @@ public class EventService {
         }
     }
 
-    public List<EventEntity> eventosDisponiveis(){
+    public List<EventEntity> eventosDisponiveis() {
         try {
             return eventRepository.eventosDisponiveis();
         } catch (Exception e) {
@@ -91,5 +91,4 @@ public class EventService {
             throw new RuntimeException("Erro ao listar eventos");
         }
     }
-
 }
