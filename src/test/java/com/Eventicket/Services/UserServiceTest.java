@@ -41,11 +41,9 @@ class UserServiceTest {
     Long userId;
     UserEntity user;
     AddresEntity address;
-
     UserEntity existingUser;
     UserEntity updatedUser;
     AddresEntity existingAddress;
-    AddresEntity updatedAddress;
 
     @BeforeEach
     void setup() {

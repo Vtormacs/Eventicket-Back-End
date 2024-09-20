@@ -50,7 +50,7 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             System.out.println("Erro ao salvar o usuário: " + e.getMessage());
-            throw new UserSaveException("Erro ao salvar o usuário", e);
+            throw new UserSaveException("Erro ao salvar o usuário");
         }
     }
 
