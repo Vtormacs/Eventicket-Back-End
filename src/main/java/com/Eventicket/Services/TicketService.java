@@ -33,20 +33,20 @@ public class TicketService {
         }
     }
 
-    public TicketEntity update(TicketEntity ticketEntity, Long id) {
-        try {
-            if (ticketRepository.findById(id).isPresent()) {
-                ticketEntity.setId(id);
-                return ticketRepository.save(ticketEntity);
-            } else {
-                System.out.println("Ticket não encontrado com o ID: " + id);
-                return new TicketEntity();
-            }
-        } catch (Exception e) {
-            System.out.println("Erro ao atualizar o ticket: " + e.getMessage());
-            throw new RuntimeException("Atualizar ticket");
-        }
-    }
+//    public TicketEntity update(TicketEntity ticketEntity, Long id) {
+//        try {
+//            if (ticketRepository.findById(id).isPresent()) {
+//                ticketEntity.setId(id);
+//                return ticketRepository.save(ticketEntity);
+//            } else {
+//                System.out.println("Ticket não encontrado com o ID: " + id);
+//                return new TicketEntity();
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Erro ao atualizar o ticket: " + e.getMessage());
+//            throw new RuntimeException("Atualizar ticket");
+//        }
+//    }
 
     public String delete(Long id) {
         try {
@@ -78,7 +78,7 @@ public class TicketService {
             });
         } catch (Exception e) {
             System.out.println("Erro ao buscar o ticket" + e.getMessage());
-            throw new RuntimeException(e.getCause());
+            throw new RuntimeException("Ticket não encontrado");
         }
     }
 
@@ -90,7 +90,7 @@ public class TicketService {
             return ticketRepository.save(ingresso);
         } catch (Exception e) {
             System.out.println("Erro ao alterar status do ticket" + e.getMessage());
-            throw new RuntimeException("Erro ao alterar status do ticket");
+            throw new RuntimeException("Erro ao alterar status do ticket ");
         }
     }
 

@@ -26,14 +26,14 @@ public class TicketController {
         }
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<TicketEntity> update(@RequestBody TicketEntity ticketEntity, @PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(ticketService.update(ticketEntity, id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<TicketEntity> update(@RequestBody TicketEntity ticketEntity, @PathVariable Long id) {
+//        try {
+//            return ResponseEntity.ok(ticketService.update(ticketEntity, id));
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
