@@ -192,23 +192,6 @@ class EventServiceTest {
     }
 
     @Test
-    @DisplayName("Erro genérico ao atualizar evento")
-    void updateGenericError() {
-        Long id = 1L;
-        EventEntity evento = new EventEntity(id, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", null, null, null);
-
-        when(eventRepository.findById(id)).thenReturn(Optional.of(evento));
-
-        doThrow(new RuntimeException("Erro ao atualizar evento")).when(eventRepository).atualizarEvento(anyLong(), any(), any(), any(), any());
-
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            eventService.update(evento, id);
-        });
-
-        assertTrue(exception.getMessage().contains("Erro ao atualizar evento"));
-    }
-
-    @Test
     @DisplayName("Erro ao listar eventos - Simulação de exceção")
     void findAllError() {
         when(eventRepository.findAll()).thenThrow(new RuntimeException());
@@ -219,4 +202,56 @@ class EventServiceTest {
 
         assertEquals("Erro ao listar eventos", exception.getMessage());
     }
+
+    @Test
+    @DisplayName("Atualiza evento com sucesso")
+    void updateEventSuccess() {
+        Long id = 1L;
+
+        EventEntity eventoExistente = new EventEntity(id, "Evento Antigo", 100.00, 10, LocalDate.now().plusDays(1), "Descrição Antiga", null, null, null);
+
+        EventEntity eventoAtualizado = new EventEntity(id, "Evento Atualizado", 120.00, 15, LocalDate.now().plusDays(2), "Nova descrição", null, null, null);
+
+        when(eventRepository.findById(id)).thenReturn(Optional.of(eventoExistente));
+
+        when(eventRepository.save(any(EventEntity.class))).thenReturn(eventoAtualizado);
+
+        var resultado = eventService.update(eventoAtualizado, id);
+
+        assertEquals("Evento Atualizado", resultado.getNome());
+        assertEquals(120.00, resultado.getPrecoDoIngresso());
+        assertEquals(15, resultado.getQuantidade());
+        assertEquals("Nova descrição", resultado.getDescricao());
+    }
+
+    @Test
+    @DisplayName("Falha ao tentar atualizar evento não encontrado")
+    void updateEventNotFound() {
+        Long id = 1L;
+        EventEntity eventoAtualizado = new EventEntity(id, "Evento Atualizado", 120.00, 15, LocalDate.now().plusDays(2), "Nova descrição", null, null, null);
+
+        when(eventRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EventNotFoundException.class, () -> {
+            eventService.update(eventoAtualizado, id);
+        });
+    }
+
+    @Test
+    @DisplayName("Falha genérica ao atualizar evento")
+    void updateEventGenericError() {
+        Long id = 1L;
+        EventEntity eventoAtualizado = new EventEntity(id, "Evento Atualizado", 120.00, 15, LocalDate.now().plusDays(2), "Nova descrição", null, null, null);
+
+        when(eventRepository.findById(id)).thenReturn(Optional.of(eventoAtualizado));
+
+        doThrow(new RuntimeException("Erro ao atualizar evento")).when(eventRepository).save(any(EventEntity.class));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            eventService.update(eventoAtualizado, id);
+        });
+
+        assertTrue(exception.getMessage().contains("Erro ao atualizar evento"));
+    }
+
 }

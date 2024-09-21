@@ -129,25 +129,33 @@ class TicketServiceTest {
     assertEquals("Erro ao alterar status do ticket " , exception.getMessage());
     }
 
-//    @Test
-//    @DisplayName("Alterar status dos ingressos expirados com sucesso")
-//    void changeStatusToExpirado() {
-//        List<EventEntity> eventos = List.of(event);
-//        when(eventRepository.findAll()).thenReturn(eventos);
-//
-//        var ticketExpirado = new TicketEntity(1L, StatusTicket.VALIDO, null, null, null);
-//        event.setIngressos(List.of(ticketExpirado));
-//
-//        ticketService.changeStatusToExpirado();
-//
-//        assertEquals(StatusTicket.EXPIRADO, ticketExpirado.getStatusTicket());
-//    }
+    @Test
+    @DisplayName("Alterar status dos ingressos expirados com sucesso")
+    void changeStatusToExpirado() {
+        event.setData(LocalDate.now().minusDays(1));
 
-//    @Test
-//    @DisplayName("Erro genérico ao salvar ticket")
-//    void saveTicketError() {
-//
-//    }
+        TicketEntity ticketValido = new TicketEntity(1L, StatusTicket.VALIDO, null, event ,null);
+
+        event.setIngressos(List.of(ticketValido));
+
+        when(eventRepository.findAll()).thenReturn(List.of(event));
+
+        ticketService.changeStatusToExpirado();
+
+        assertEquals(StatusTicket.EXPIRADO, ticketValido.getStatusTicket());
+    }
+
+    @Test
+    @DisplayName("Erro ao alterar status dos ingressos expirados")
+    void changeStatusToExpiradoError() {
+        when(eventRepository.findAll()).thenThrow(new RuntimeException("Erro ao buscar eventos"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            ticketService.changeStatusToExpirado();
+        });
+
+        assertTrue(exception.getMessage().contains("Erro ao mudar status dos ingressos"));
+    }
 
     @Test
     @DisplayName("Erro genérico ao deletar ticket")

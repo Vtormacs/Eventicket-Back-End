@@ -29,17 +29,39 @@ public class EventService {
         }
     }
 
+//    public EventEntity update(EventEntity eventEntity, Long id) {
+//        try {
+//            EventEntity eventoExistente = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
+//
+//            eventRepository.atualizarEvento(id, eventEntity.getNome(), eventEntity.getData(), eventEntity.getDescricao(), eventEntity.getQuantidade());
+//
+//            AddresEntity novoEndereco = eventEntity.getEndereco();
+//            if (novoEndereco != null && eventoExistente.getEndereco() != null) {
+//                addresRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
+//            }
+//            return eventoExistente;
+//        } catch (EventNotFoundException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            System.err.println("Erro ao atualizar o evento: " + e.getMessage());
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
+
     public EventEntity update(EventEntity eventEntity, Long id) {
         try {
             EventEntity eventoExistente = eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException());
 
-            eventRepository.atualizarEvento(id, eventEntity.getNome(), eventEntity.getData(), eventEntity.getDescricao(), eventEntity.getQuantidade());
+            eventEntity.setId(id);
 
-            AddresEntity novoEndereco = eventEntity.getEndereco();
-            if (novoEndereco != null && eventoExistente.getEndereco() != null) {
-                addresRepository.atualizarEndereco(eventoExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
+            if (eventEntity.getEndereco() != null && eventoExistente.getEndereco() != null){
+                eventEntity.getEndereco().setId(eventoExistente.getEndereco().getId());
             }
-            return eventoExistente;
+
+            eventEntity.setIngressos(eventoExistente.getIngressos());
+            eventEntity.setCategories(eventoExistente.getCategories());
+
+            return eventRepository.save(eventEntity);
         } catch (EventNotFoundException e) {
             throw e;
         } catch (Exception e) {

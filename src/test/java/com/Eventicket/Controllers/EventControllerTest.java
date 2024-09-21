@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -37,9 +38,6 @@ class EventControllerTest {
         assertEquals("Nome evento", retorno.getBody().getNome());
     }
 
-    @Test
-    void update() {
-    }
 
     @Test
     void delete() {
@@ -131,5 +129,46 @@ class EventControllerTest {
         assertTrue(retorno.getBody().isEmpty());
     }
 
+    @Test
+    void update() {
+        Long id = 1L;
+        EventEntity eventoExistente = new EventEntity(id, "Evento Antigo", 100.00, 10, LocalDate.now().plusDays(1), "Descrição antiga", null, null, null);
+        EventEntity eventoAtualizado = new EventEntity(id, "Evento Atualizado", 150.00, 20, LocalDate.now().plusDays(2), "Descrição nova", null, null, null);
+
+        when(eventRepository.findById(id)).thenReturn(Optional.of(eventoExistente));
+        when(eventRepository.save(eventoAtualizado)).thenReturn(eventoAtualizado);
+
+        var retorno = eventController.update(eventoAtualizado, id);
+
+        assertEquals(HttpStatus.OK, retorno.getStatusCode());
+        assertEquals("Evento Atualizado", retorno.getBody().getNome());
+        assertEquals(150.00, retorno.getBody().getPrecoDoIngresso());
+    }
+
+    @Test
+    void deleteError() {
+        Long id = 1L;
+
+        // Simula um erro ao deletar o evento
+        when(eventRepository.findById(id)).thenReturn(Optional.of(new EventEntity()));
+        doThrow(new RuntimeException("Erro ao deletar")).when(eventRepository).deleteById(id);
+
+        var retorno = eventController.delete(id);
+
+        assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+        assertTrue(retorno.getBody().toString().contains("Erro ao deletar o evento"));
+    }
+
+    @Test
+    void saveError() {
+        EventEntity evento = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", null, null, null);
+
+        // Simula um erro ao salvar o evento
+        when(eventRepository.save(evento)).thenThrow(new RuntimeException("Erro ao salvar evento"));
+
+        var retorno = eventController.save(evento);
+
+        assertEquals(HttpStatus.BAD_REQUEST, retorno.getStatusCode());
+    }
 
 }
