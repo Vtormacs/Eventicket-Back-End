@@ -42,6 +42,9 @@ public class BuyService {
     public BuyEntity save(Long idUsuario, Map<Long, Integer> carrinho) {
         try {
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
+            if (!usuario.getAtivo()){
+                throw new RuntimeException("Usuário precisa ativar a conta");
+            }
             LocalDate dataAtual = LocalDate.now();
             Double total = 0.0;
             List<TicketEntity> ingressos = new ArrayList<>();
@@ -84,20 +87,20 @@ public class BuyService {
     }
 
 
-    public BuyEntity update(BuyEntity buyEntity, Long id) {
-        try {
-            if (buyRepository.findById(id).isPresent()) {
-                buyEntity.setId(id);
-                return buyRepository.save(buyEntity);
-            } else {
-                System.out.println("Compra não encontrada com o ID: " + id);
-                throw new RuntimeException("Compra não encontrada com o ID: " + id);
-            }
-        } catch (Exception e) {
-            System.out.println("Erro ao atualizar a compra: " + e.getMessage());
-            throw new RuntimeException("Erro ao atualizar a compra: ", e);
-        }
-    }
+//    public BuyEntity update(BuyEntity buyEntity, Long id) {
+//        try {
+//            if (buyRepository.findById(id).isPresent()) {
+//                buyEntity.setId(id);
+//                return buyRepository.save(buyEntity);
+//            } else {
+//                System.out.println("Compra não encontrada com o ID: " + id);
+//                throw new RuntimeException("Compra não encontrada com o ID: " + id);
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Erro ao atualizar a compra: " + e.getMessage());
+//            throw new RuntimeException("Erro ao atualizar a compra: ", e);
+//        }
+//    }
 
     public String delete(Long id) {
         try {
