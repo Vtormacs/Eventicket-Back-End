@@ -54,6 +54,7 @@ class BuyServiceTest {
 
         UserEntity usuario = new UserEntity();
         usuario.setId(idUsuario);
+        usuario.setAtivo(true);
 
         EventEntity evento = new EventEntity();
         evento.setId(1L);
@@ -91,6 +92,24 @@ class BuyServiceTest {
     }
 
     @Test
+    @DisplayName("Teste de compra - Usuário não ativado")
+    void testSaveCompraUserNotActive() {
+        UserEntity usuario = new UserEntity();
+        usuario.setId(1L);
+        usuario.setAtivo(false);
+
+        Map<Long, Integer> carrinho = Map.of(1L, 2);
+
+        when(userRepository.findById(usuario.getId())).thenReturn(Optional.of(usuario));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            buyService.save(usuario.getId(), carrinho);
+        });
+
+        assertEquals("Erro ao salvar a compra: Usuário precisa ativar a conta", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Teste de compra - Evento não encontrado")
     void testSaveCompraEventNotFound() {
         Long idUsuario = 1L;
@@ -98,6 +117,7 @@ class BuyServiceTest {
 
         UserEntity usuario = new UserEntity();
         usuario.setId(idUsuario);
+        usuario.setAtivo(true);
 
         when(userRepository.findById(idUsuario)).thenReturn(Optional.of(usuario));
         when(eventRepository.findById(1L)).thenReturn(Optional.empty());
@@ -117,6 +137,7 @@ class BuyServiceTest {
 
         UserEntity usuario = new UserEntity();
         usuario.setId(idUsuario);
+        usuario.setAtivo(true);
 
         EventEntity evento = new EventEntity();
         evento.setId(1L);
@@ -143,6 +164,7 @@ class BuyServiceTest {
 
         UserEntity usuario = new UserEntity();
         usuario.setId(idUsuario);
+        usuario.setAtivo(true);
 
         EventEntity evento = new EventEntity();
         evento.setId(1L);
