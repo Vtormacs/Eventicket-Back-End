@@ -63,6 +63,7 @@ public class BuyService {
                     throw new EventDatePassedException("O evento já passou!");
                 }
 
+                buyRepository.save(venda);
                 for (int i = 0; i < quantidadeCompra; i++) {
                     TicketEntity ingresso = new TicketEntity(StatusTicket.VALIDO, usuario, eventEntity, venda);
                     ingressos.add(ticketRepository.save(ingresso));
