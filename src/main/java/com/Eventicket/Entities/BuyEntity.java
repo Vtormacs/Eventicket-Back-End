@@ -41,7 +41,7 @@ public class BuyEntity {
     private UserEntity usuario;
 
     @OneToMany(mappedBy = "compra")
-    @JsonIgnoreProperties({"compra", "usuario"})
+    @JsonIgnoreProperties({"compra", "usuario", "quantidade"})
     private List<TicketEntity> ingressos;
 
     public BuyEntity(Instant data, Double total, StatusBuy statusBuy, UserEntity usuario) {

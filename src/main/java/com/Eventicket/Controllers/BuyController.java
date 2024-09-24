@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/buy")
@@ -22,9 +23,9 @@ public class BuyController {
     private EventRepository eventRepository;
 
     @PostMapping("/sell/{idUsuario}")
-    public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario,@RequestBody List<Long> idEventos) {
+    public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario, @RequestBody Map<Long, Integer> carrinho) {
         try {
-            return ResponseEntity.ok(buyService.save(idUsuario,idEventos));
+            return ResponseEntity.ok(buyService.save(idUsuario,carrinho));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

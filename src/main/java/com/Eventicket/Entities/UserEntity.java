@@ -70,6 +70,6 @@ public class UserEntity {
     private List<BuyEntity> compras = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
-    @JsonIgnoreProperties({"usuario"})
+    @JsonIgnoreProperties({"usuario", "quantidade"})
     private List<TicketEntity> ingressos = new ArrayList<>();
 }

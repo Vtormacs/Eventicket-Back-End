@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 @Setter
 @Entity(name = "event")
 @Table(name = "event")
+@JsonIgnoreProperties({"ingressos"})
 public class EventEntity {
 
     @Id
@@ -39,8 +41,8 @@ public class EventEntity {
     private Integer quantidade;
 
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private Date data;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDate data;
 
     @NotNull
     @NotBlank
@@ -63,4 +65,7 @@ public class EventEntity {
     )
     @JsonIgnoreProperties("events")
     private Set<CategoryEntity> categories;
+
+    @OneToMany(mappedBy = "evento", fetch = FetchType.EAGER)
+    private List<TicketEntity> ingressos;
 }

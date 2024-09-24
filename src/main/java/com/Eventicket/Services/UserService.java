@@ -25,6 +25,9 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private TicketService ticketService;
+
     public UserEntity save(UserEntity userEntity) {
         try {
             userRepository.save(userEntity);
@@ -47,26 +50,47 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             System.out.println("Erro ao salvar o usuário: " + e.getMessage());
-            throw new UserSaveException("Erro ao salvar o usuário", e);
+            throw new UserSaveException("Erro ao salvar o usuário");
         }
     }
 
-    public UserEntity update(UserEntity userEntity, Long id) {
+//    public UserEntity update1(UserEntity userEntity, Long id) {
+//        try {
+//            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+//
+//            userRepository.atualizarUsuario(id, userEntity.getNome(), userEntity.getCpf(), userEntity.getEmail(), userEntity.getSenha(), userEntity.getCelular());
+//
+//            AddresEntity novoEndereco = userEntity.getEndereco();
+//            if (novoEndereco != null && usuarioExistente.getEndereco() != null) {
+//                addresRepository.atualizarEndereco(usuarioExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
+//            }
+//
+//            return usuarioExistente;
+//        } catch (UserNotFoundException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new UserUpdateException("Erro ao atualizar a usuario: " + e.getMessage());
+//        }
+//    }
+
+    public UserEntity update2(UserEntity userEntity, Long id) {
         try {
-            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+            UserEntity userExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 
-            userRepository.atualizarUsuario(id, userEntity.getNome(), userEntity.getCpf(), userEntity.getEmail(), userEntity.getSenha(), userEntity.getCelular());
+            userEntity.setId(id);
 
-            AddresEntity novoEndereco = userEntity.getEndereco();
-            if (novoEndereco != null && usuarioExistente.getEndereco() != null) {
-                addresRepository.atualizarEndereco(usuarioExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
+            if (userEntity.getEndereco() != null && userExistente.getEndereco() != null) {
+                userEntity.getEndereco().setId(userExistente.getEndereco().getId());
             }
 
-            return usuarioExistente;
+            userEntity.setCompras(userExistente.getCompras());
+            userEntity.setIngressos(userExistente.getIngressos());
+
+            return userRepository.save(userEntity);
         } catch (UserNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new UserUpdateException("Erro ao atualizar a usuario: " + e.getMessage());
+            throw new UserUpdateException("Erro ao atualizar o usuário: " + e.getMessage());
         }
     }
 
