@@ -1,7 +1,7 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.EmailEntity;
-import com.Eventicket.Entities.Enums.StatusEmail;
+import com.Eventicket.Entities.Enum.StatusEmail;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.EmailRepository;

@@ -1,9 +1,8 @@
 package com.Eventicket.Entities;
 
-import com.Eventicket.Entities.Enums.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusBuy;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

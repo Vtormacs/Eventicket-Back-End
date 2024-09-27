@@ -1,20 +1,17 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.*;
-import com.Eventicket.Entities.Enums.StatusBuy;
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.StatusBuy;
 import com.Eventicket.Repositories.*;
 import com.Eventicket.Services.Exception.Event.EventNotFoundException;
 import com.Eventicket.Services.Exception.User.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 

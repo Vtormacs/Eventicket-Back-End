@@ -1,6 +1,6 @@
 package com.Eventicket.Entities;
 
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.StatusTicket;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

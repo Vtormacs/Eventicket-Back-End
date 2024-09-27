@@ -1,8 +1,8 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.*;
-import com.Eventicket.Entities.Enums.StatusBuy;
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusTicket;
 import com.Eventicket.Repositories.BuyRepository;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class BuyService {
