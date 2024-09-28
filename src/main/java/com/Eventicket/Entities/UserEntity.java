@@ -8,7 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -17,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "users")
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity  implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,4 +66,34 @@ public class UserEntity {
     @OneToMany(mappedBy = "usuario")
     @JsonIgnoreProperties({"usuario", "quantidade"})
     private List<TicketEntity> ingressos = new ArrayList<>();
+
+
+    public UserEntity(String nome, String email, String senha, Role role, String cpf, String celular) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
+        this.celular = celular;
+        this.cpf = cpf;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == Role.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_ORGANIZADOR"), new SimpleGrantedAuthority("ROLE_CLIENTE"));
+        }
+        if (this.role == Role.ORGANIZADOR) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ORGANIZADOR"), new SimpleGrantedAuthority("ROLE_CLIENTE"));
+        } else return List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"));
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }
