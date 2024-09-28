@@ -25,7 +25,6 @@ public class TokenService {
             String token = JWT.create()
                     .withIssuer("api-eventicket")
                     .withSubject(user.getEmail())
-                    .withSubject(user.getCpf())
                     .withExpiresAt(generateeExpirationDate())
                     .sign(algorithm);
 
