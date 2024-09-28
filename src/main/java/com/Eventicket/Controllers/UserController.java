@@ -1,5 +1,6 @@
 package com.Eventicket.Controllers;
 
+import com.Eventicket.DTO.UserDTO;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.UserService;
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<UserEntity> findById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 

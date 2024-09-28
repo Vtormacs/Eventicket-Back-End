@@ -2,9 +2,7 @@ package com.Eventicket.Repositories;
 
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.userdetails.UserDetails;

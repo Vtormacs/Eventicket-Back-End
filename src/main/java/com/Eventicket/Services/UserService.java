@@ -1,5 +1,7 @@
 package com.Eventicket.Services;
 
+import com.Eventicket.DTO.Mapper.UserMapper;
+import com.Eventicket.DTO.UserDTO;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.EventEntity;
@@ -54,25 +56,6 @@ public class UserService {
         }
     }
 
-//    public UserEntity update1(UserEntity userEntity, Long id) {
-//        try {
-//            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
-//
-//            userRepository.atualizarUsuario(id, userEntity.getNome(), userEntity.getCpf(), userEntity.getEmail(), userEntity.getSenha(), userEntity.getCelular());
-//
-//            AddresEntity novoEndereco = userEntity.getEndereco();
-//            if (novoEndereco != null && usuarioExistente.getEndereco() != null) {
-//                addresRepository.atualizarEndereco(usuarioExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
-//            }
-//
-//            return usuarioExistente;
-//        } catch (UserNotFoundException e) {
-//            throw e;
-//        } catch (Exception e) {
-//            throw new UserUpdateException("Erro ao atualizar a usuario: " + e.getMessage());
-//        }
-//    }
-
     public UserEntity update2(UserEntity userEntity, Long id) {
         try {
             UserEntity userExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
@@ -114,8 +97,10 @@ public class UserService {
         }
     }
 
-    public UserEntity findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+    public UserDTO findById(Long id) {
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+
+        return UserMapper.toUserDTO(userEntity);
     }
 
     public List<EventEntity> buscarEventosDaMesmaCidade(Long idUsuario) {
