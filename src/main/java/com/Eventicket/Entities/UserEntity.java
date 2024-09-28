@@ -1,5 +1,6 @@
 package com.Eventicket.Entities;
 
+import com.Eventicket.Entities.Enum.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -26,6 +27,8 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Role role;
 
     @NotNull
     @NotEmpty
