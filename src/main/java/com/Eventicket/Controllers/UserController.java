@@ -18,10 +18,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/save")
-    public ResponseEntity<UserEntity> save(@RequestBody UserEntity userEntity) {
-        return ResponseEntity.ok(userService.save(userEntity));
-    }
+//    @PostMapping("/save")
+//    public ResponseEntity<UserEntity> save(@RequestBody UserEntity userEntity) {
+//        return ResponseEntity.ok(userService.save(userEntity));
+//    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, @PathVariable Long id) {
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<UserEntity>> findAll() {
+    public ResponseEntity<List<UserDTO>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 

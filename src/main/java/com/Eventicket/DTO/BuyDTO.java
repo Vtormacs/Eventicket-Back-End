@@ -11,6 +11,7 @@ public record BuyDTO(
         Double total,
         StatusBuy statusBuy,
         Long usuarioId, // Apenas o ID do usuário
+        String nomeCliente,
         List<TicketDTO> ingressos
 ) {
 }

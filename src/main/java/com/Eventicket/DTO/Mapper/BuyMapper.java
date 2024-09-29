@@ -19,6 +19,7 @@ public class BuyMapper {
                 buyEntity.getTotal(),
                 buyEntity.getStatusBuy(),
                 buyEntity.getUsuario().getId(),
+                buyEntity.getUsuario().getNome(),
                 ingressosDTO
         );
     }
