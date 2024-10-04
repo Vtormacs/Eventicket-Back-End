@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -18,7 +19,9 @@ import java.util.List;
 @Setter
 @Entity(name = "buy")
 @Table(name = "buy")
-public class BuyEntity {
+public class BuyEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

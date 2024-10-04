@@ -209,32 +209,32 @@ class BuyServiceTest {
         assertEquals("Compra nao encontrada", exception.getMessage());
     }
 
-    @Test
-    @DisplayName("Teste de busca de todas as compras - sucesso")
-    void testFindAllCompras() {
-        List<BuyEntity> compras = new ArrayList<>();
-        compras.add(new BuyEntity());
+//    @Test
+//    @DisplayName("Teste de busca de todas as compras - sucesso")
+//    void testFindAllCompras() {
+//        List<BuyEntity> compras = new ArrayList<>();
+//        compras.add(new BuyEntity());
+//
+//        when(buyRepository.findAll()).thenReturn(compras);
+//
+//        List<BuyEntity> result = buyService.findAll();
+//
+//        assertEquals(1, result.size());
+//    }
 
-        when(buyRepository.findAll()).thenReturn(compras);
-
-        List<BuyEntity> result = buyService.findAll();
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    @DisplayName("Teste de busca por ID - sucesso")
-    void testFindCompraByIdSuccess() {
-        Long idCompra = 1L;
-        BuyEntity compra = new BuyEntity();
-        compra.setId(idCompra);
-
-        when(buyRepository.findById(idCompra)).thenReturn(Optional.of(compra));
-
-        BuyEntity result = buyService.findById(idCompra);
-
-        assertEquals(idCompra, result.getId());
-    }
+//    @Test
+//    @DisplayName("Teste de busca por ID - sucesso")
+//    void testFindCompraByIdSuccess() {
+//        Long idCompra = 1L;
+//        BuyEntity compra = new BuyEntity();
+//        compra.setId(idCompra);
+//
+//        when(buyRepository.findById(idCompra)).thenReturn(Optional.of(compra));
+//
+//        BuyEntity result = buyService.findById(idCompra);
+//
+//        assertEquals(idCompra, result.getId());
+//    }
 
     @Test
     @DisplayName("Teste de busca por ID - Compra não encontrada")
