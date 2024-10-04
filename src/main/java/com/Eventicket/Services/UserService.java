@@ -18,41 +18,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AddresRepository addresRepository;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private TicketService ticketService;
-
-//    public UserEntity save(UserEntity userEntity) {
-//        try {
-//            userRepository.save(userEntity);
-//
-//            if (!userEntity.getEmail().isEmpty()) {
-//                EmailEntity email = emailService.criarEmail(userEntity);
-//                emailService.enviaEmail(email);
-//            }
-//
-//            return userEntity;
-//        } catch (EmailSendException e) {
-//            System.out.println("Erro ao enviar o e-mail: " + e.getMessage());
-//            throw e;
-//        } catch (DataIntegrityViolationException e) {
-//            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-//                System.out.println("CPF já existe no sistema: " + e.getMessage());
-//                throw new UserCPFException();
-//            }
-//            System.out.println("Erro de integridade de dados: " + e.getMessage());
-//            throw e;
-//        } catch (Exception e) {
-//            System.out.println("Erro ao salvar o usuário: " + e.getMessage());
-//            throw new UserSaveException("Erro ao salvar o usuário");
-//        }
-//    }
-
     public UserEntity update2(UserEntity userEntity, Long id) {
         try {
             UserEntity userExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());

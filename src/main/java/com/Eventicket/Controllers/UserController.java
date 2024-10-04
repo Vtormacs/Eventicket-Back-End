@@ -41,7 +41,6 @@ public class UserController {
     @GetMapping("/buscarEventos/{idUsuario}")
     public ResponseEntity<List<EventEntity>> buscarEventosDaMesmaCidade(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(userService.buscarEventosDaMesmaCidade(idUsuario));
-
     }
 
     @GetMapping("/validar-conta")
