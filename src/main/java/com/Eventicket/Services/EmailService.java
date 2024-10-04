@@ -5,7 +5,7 @@ import com.Eventicket.Entities.Enum.StatusEmail;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.EmailRepository;
-import com.Eventicket.Services.Exception.Email.EmailSendException;
+import com.Eventicket.Exception.Email.EmailSendException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;

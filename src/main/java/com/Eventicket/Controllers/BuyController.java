@@ -1,5 +1,6 @@
 package com.Eventicket.Controllers;
 
+import com.Eventicket.DTO.Consulta.BuyDTOConsulta;
 import com.Eventicket.Entities.BuyEntity;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Repositories.EventRepository;
@@ -50,7 +51,7 @@ public class BuyController {
     }
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<BuyEntity>> findAll() {
+    public ResponseEntity<List<BuyDTOConsulta>> findAll() {
         try {
             return ResponseEntity.ok(buyService.findAll());
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class BuyController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<BuyEntity> findById(@PathVariable Long id) {
+    public ResponseEntity<BuyDTOConsulta> findById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(buyService.findById(id));
         } catch (Exception e) {

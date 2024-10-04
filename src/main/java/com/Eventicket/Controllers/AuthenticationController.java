@@ -1,8 +1,8 @@
 package com.Eventicket.Controllers;
 
-import com.Eventicket.DTO.AuthenticationDTO;
-import com.Eventicket.DTO.LoginResponseDTO;
-import com.Eventicket.DTO.RegisterDTO;
+import com.Eventicket.DTO.Recebido.AuthenticationDTO;
+import com.Eventicket.DTO.Recebido.LoginResponseDTO;
+import com.Eventicket.DTO.Recebido.RegisterDTO;
 import com.Eventicket.Services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

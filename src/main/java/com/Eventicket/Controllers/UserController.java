@@ -1,6 +1,6 @@
 package com.Eventicket.Controllers;
 
-import com.Eventicket.DTO.UserDTO;
+import com.Eventicket.DTO.Consulta.UserDTOConsulta;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Services.UserService;
@@ -18,11 +18,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//    @PostMapping("/save")
-//    public ResponseEntity<UserEntity> save(@RequestBody UserEntity userEntity) {
-//        return ResponseEntity.ok(userService.save(userEntity));
-//    }
-
     @PutMapping("/update/{id}")
     public ResponseEntity<UserEntity> update(@RequestBody UserEntity userEntity, @PathVariable Long id) {
         return ResponseEntity.ok(userService.update2(userEntity, id));
@@ -34,12 +29,12 @@ public class UserController {
     }
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<UserDTO>> findAll() {
+    public ResponseEntity<List<UserDTOConsulta>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<UserDTOConsulta> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 

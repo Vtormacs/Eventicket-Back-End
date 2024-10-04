@@ -3,7 +3,6 @@ package com.Eventicket.Controllers;
 
 import com.Eventicket.Entities.CategoryEntity;
 import com.Eventicket.Repositories.CategoryRepository;
-import com.Eventicket.Services.Exception.Category.CategoryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

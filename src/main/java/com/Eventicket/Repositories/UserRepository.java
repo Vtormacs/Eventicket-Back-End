@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     List<EventEntity> buscarEventosDaMesmaCidade(@Param("cidade") String cidade);
 
     UserDetails findByEmail(String email);
+
+    List<UserEntity> findByNome(String nome);
 }

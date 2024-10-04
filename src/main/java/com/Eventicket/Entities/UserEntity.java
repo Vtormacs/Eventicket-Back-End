@@ -28,6 +28,7 @@ public class UserEntity  implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @NotBlank

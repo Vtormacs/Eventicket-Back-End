@@ -2,7 +2,7 @@ package com.Eventicket.Services;
 
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Repositories.EventRepository;
-import com.Eventicket.Services.Exception.Event.EventNotFoundException;
+import com.Eventicket.Exception.Event.EventNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 

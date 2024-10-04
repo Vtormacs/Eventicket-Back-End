@@ -1,17 +1,13 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.DTO.Mapper.UserMapper;
-import com.Eventicket.DTO.UserDTO;
-import com.Eventicket.Entities.AddresEntity;
-import com.Eventicket.Entities.EmailEntity;
+import com.Eventicket.DTO.Consulta.UserDTOConsulta;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
-import com.Eventicket.Services.Exception.Email.EmailSendException;
-import com.Eventicket.Services.Exception.User.*;
+import com.Eventicket.Exception.User.*;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,11 +86,11 @@ public class UserService {
         }
     }
 
-    public List<UserDTO> findAll() {
+    public List<UserDTOConsulta> findAll() {
         try {
             List<UserEntity> lista = userRepository.findAll();
 
-            List<UserDTO> dtos = lista.stream().map(UserMapper::toUserDTO).collect(Collectors.toList());
+            List<UserDTOConsulta> dtos = lista.stream().map(UserMapper::toUserDTO).collect(Collectors.toList());
 
             return dtos;
         } catch (Exception e) {
@@ -102,7 +98,7 @@ public class UserService {
         }
     }
 
-    public UserDTO findById(Long id) {
+    public UserDTOConsulta findById(Long id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 
         return UserMapper.toUserDTO(userEntity);

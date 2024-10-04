@@ -1,15 +1,15 @@
 package com.Eventicket.Services;
 
-import com.Eventicket.DTO.AuthenticationDTO;
-import com.Eventicket.DTO.RegisterDTO;
+import com.Eventicket.DTO.Recebido.AuthenticationDTO;
+import com.Eventicket.DTO.Recebido.RegisterDTO;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EmailEntity;
 import com.Eventicket.Entities.Enum.Role;
 import com.Eventicket.Entities.UserEntity;
 import com.Eventicket.Repositories.UserRepository;
 import com.Eventicket.Security.TokenService;
-import com.Eventicket.Services.Exception.Email.EmailSendException;
-import com.Eventicket.Services.Exception.User.UserCPFException;
+import com.Eventicket.Exception.Email.EmailSendException;
+import com.Eventicket.Exception.User.UserCPFException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
