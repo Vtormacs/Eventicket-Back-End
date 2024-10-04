@@ -24,18 +24,9 @@ public class BuyController {
     private EventRepository eventRepository;
 
     @PostMapping("/sell/{idUsuario}")
-    public ResponseEntity<BuyEntity> save(@PathVariable Long idUsuario, @RequestBody Map<Long, Integer> carrinho) {
+    public ResponseEntity<BuyEntity> processarCompra(@PathVariable Long idUsuario, @RequestBody Map<Long, Integer> carrinho) {
         try {
-            return ResponseEntity.ok(buyService.save(idUsuario,carrinho));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<BuyEntity> update(@RequestBody BuyEntity buyEntity, @PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(buyService.update(buyEntity, id));
+            return ResponseEntity.ok(buyService.processarCompra(idUsuario,carrinho));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

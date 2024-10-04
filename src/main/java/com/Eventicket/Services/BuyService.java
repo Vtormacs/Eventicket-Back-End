@@ -41,7 +41,7 @@ public class BuyService {
     @Autowired
     private EmailService emailService;
 
-    public BuyEntity save(Long idUsuario, Map<Long, Integer> carrinho) {
+    public BuyEntity processarCompra(Long idUsuario, Map<Long, Integer> carrinho) {
         try {
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
             if (!usuario.getAtivo()){
@@ -73,7 +73,7 @@ public class BuyService {
 
                 total += quantidadeCompra * eventEntity.getPrecoDoIngresso();
                 eventEntity.setQuantidade(eventEntity.getQuantidade() - quantidadeCompra);
-                eventRepository.save(eventEntity); // Garantir que o evento foi salvo
+                eventRepository.save(eventEntity);
             }
 
             venda.setIngressos(ingressos);
@@ -86,22 +86,6 @@ public class BuyService {
         } catch (Exception e) {
             System.out.println("Erro ao salvar a compra: " + e.getMessage());
             throw new RuntimeException("Erro ao salvar a compra: " + e.getMessage(), e);
-        }
-    }
-
-
-    public BuyEntity update(BuyEntity buyEntity, Long id) {
-        try {
-            if (buyRepository.findById(id).isPresent()) {
-                buyEntity.setId(id);
-                return buyRepository.save(buyEntity);
-            } else {
-                System.out.println("Compra não encontrada com o ID: " + id);
-                throw new RuntimeException("Compra não encontrada com o ID: " + id);
-            }
-        } catch (Exception e) {
-            System.out.println("Erro ao atualizar a compra: " + e.getMessage());
-            throw new RuntimeException("Erro ao atualizar a compra: ", e);
         }
     }
 

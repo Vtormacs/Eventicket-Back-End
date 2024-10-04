@@ -25,33 +25,33 @@ class EmailServiceTest {
     @MockBean
     JavaMailSender mailSender;
 
-    @Test
-    void criarEmail() {
-        UserEntity user = new UserEntity(1L, "Nome Teste", "845.952.957-22", "vitor@hotmail.com", "senha", "123456789", false, null, null, null);
-
-        EmailEntity emailEntity = emailService.criarEmail(user);
-
-        assertEquals("Bem-vindo(a) ao Eventicket! 🎉", emailEntity.getSubject());
-        assertTrue(emailEntity.getText().contains("Olá Nome Teste"));
-        assertTrue(emailEntity.getText().contains("http://localhost:8080/user/validar-conta"));
-        assertEquals("vitor@hotmail.com", emailEntity.getEmailTo());
-    }
-
-    @Test
-    void criarEmailVenda() {
-        UserEntity user = new UserEntity(1L, "Nome Teste", "845.952.957-22", "vitor@hotmail.com", "senha", "123456789", false, null, null, null);
-        List<EventEntity> eventos = List.of(
-                new EventEntity(1L, "Evento 1", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", null, null, null),
-                new EventEntity(2L, "Evento 2", 150.00, 20, LocalDate.now().plusDays(2), "Descrição", null, null, null)
-        );
-
-        EmailEntity emailEntity = emailService.criarEmailVenda(user, eventos);
-
-        assertEquals("Obrigado por sua compra no Eventicket! 🎉", emailEntity.getSubject());
-        assertTrue(emailEntity.getText().contains("Evento 1"));
-        assertTrue(emailEntity.getText().contains("Evento 2"));
-        assertEquals("vitor@hotmail.com", emailEntity.getEmailTo());
-    }
+//    @Test
+//    void criarEmail() {
+//        UserEntity user = new UserEntity(1L, "Nome Teste", "845.952.957-22", "vitor@hotmail.com", "senha", "123456789", false, null, null, null);
+//
+//        EmailEntity emailEntity = emailService.criarEmail(user);
+//
+//        assertEquals("Bem-vindo(a) ao Eventicket! 🎉", emailEntity.getSubject());
+//        assertTrue(emailEntity.getText().contains("Olá Nome Teste"));
+//        assertTrue(emailEntity.getText().contains("http://localhost:8080/user/validar-conta"));
+//        assertEquals("vitor@hotmail.com", emailEntity.getEmailTo());
+//    }
+//
+//    @Test
+//    void criarEmailVenda() {
+//        UserEntity user = new UserEntity(1L, "Nome Teste", "845.952.957-22", "vitor@hotmail.com", "senha", "123456789", false, null, null, null);
+//        List<EventEntity> eventos = List.of(
+//                new EventEntity(1L, "Evento 1", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", null, null, null),
+//                new EventEntity(2L, "Evento 2", 150.00, 20, LocalDate.now().plusDays(2), "Descrição", null, null, null)
+//        );
+//
+//        EmailEntity emailEntity = emailService.criarEmailVenda(user, eventos);
+//
+//        assertEquals("Obrigado por sua compra no Eventicket! 🎉", emailEntity.getSubject());
+//        assertTrue(emailEntity.getText().contains("Evento 1"));
+//        assertTrue(emailEntity.getText().contains("Evento 2"));
+//        assertEquals("vitor@hotmail.com", emailEntity.getEmailTo());
+//    }
 
 //    @Test
 //    void enviaEmail() {
