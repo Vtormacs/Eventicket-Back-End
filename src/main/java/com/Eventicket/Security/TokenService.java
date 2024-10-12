@@ -21,14 +21,11 @@ public class TokenService {
     public String generateToken(UserEntity user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secreto);
-
-            String token = JWT.create()
+            return JWT.create()
                     .withIssuer("api-eventicket")
                     .withSubject(user.getEmail())
                     .withExpiresAt(generateeExpirationDate())
                     .sign(algorithm);
-
-            return token;
         } catch (JWTCreationException e) {
             throw new RuntimeException("Error while authenticating");
         }
