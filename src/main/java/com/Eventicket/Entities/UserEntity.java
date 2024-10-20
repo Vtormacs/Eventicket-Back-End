@@ -8,9 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity(name = "users")
 @Table(name = "users")
-public class UserEntity implements UserDetails, Serializable {
+public class UserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -81,23 +81,23 @@ public class UserEntity implements UserDetails, Serializable {
         this.cpf = cpf;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == Role.ADMIN) {
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_ORGANIZADOR"), new SimpleGrantedAuthority("ROLE_CLIENTE"));
-        }
-        if (this.role == Role.ORGANIZADOR) {
-            return List.of(new SimpleGrantedAuthority("ROLE_ORGANIZADOR"), new SimpleGrantedAuthority("ROLE_CLIENTE"));
-        } else return List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"));
-    }
-
-    @Override
-    public String getPassword() {
-        return senha;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        if (this.role == Role.ADMIN) {
+//            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_ORGANIZADOR"), new SimpleGrantedAuthority("ROLE_CLIENTE"));
+//        }
+//        if (this.role == Role.ORGANIZADOR) {
+//            return List.of(new SimpleGrantedAuthority("ROLE_ORGANIZADOR"), new SimpleGrantedAuthority("ROLE_CLIENTE"));
+//        } else return List.of(new SimpleGrantedAuthority("ROLE_CLIENTE"));
+//    }
+//
+//    @Override
+//    public String getPassword() {
+//        return senha;
+//    }
+//
+//    @Override
+//    public String getUsername() {
+//        return email;
+//    }
 }
