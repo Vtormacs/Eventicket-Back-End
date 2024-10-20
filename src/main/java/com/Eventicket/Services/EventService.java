@@ -1,5 +1,7 @@
 package com.Eventicket.Services;
 
+import com.Eventicket.DTO.Consulta.EventDTOConsulta;
+import com.Eventicket.DTO.Mapper.EventMapper;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Exception.Event.EventNotFoundException;
 import com.Eventicket.Repositories.AddresRepository;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -81,9 +84,13 @@ public class EventService {
         }
     }
 
-    public List<EventEntity> findAll() {
+    public List<EventDTOConsulta> findAll() {
         try {
-            return eventRepository.findAll();
+            List<EventEntity> lista = eventRepository.findAll();
+
+            List<EventDTOConsulta> dtos = lista.stream().map(EventMapper::toEventDTO).collect(Collectors.toList());
+
+            return dtos;
         } catch (Exception e) {
             System.out.println("Erro ao retornar a lista de eventos" + e.getMessage());
             throw new RuntimeException("Erro ao listar eventos");
