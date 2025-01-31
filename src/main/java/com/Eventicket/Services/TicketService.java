@@ -1,17 +1,14 @@
 package com.Eventicket.Services;
 
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.StatusTicket;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Executable;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 

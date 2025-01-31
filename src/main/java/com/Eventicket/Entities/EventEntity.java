@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
@@ -22,7 +23,10 @@ import java.util.List;
 @Entity(name = "event")
 @Table(name = "event")
 @JsonIgnoreProperties({"ingressos"})
-public class EventEntity {
+public class EventEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,17 +1,22 @@
 package com.Eventicket.Services;
 
+import com.Eventicket.DTO.Mapper.UserMapper;
+import com.Eventicket.DTO.Consulta.UserDTOConsulta;
+import com.Eventicket.DTO.Recebido.RegisterDTO;
 import com.Eventicket.Entities.AddresEntity;
 import com.Eventicket.Entities.EmailEntity;
+import com.Eventicket.Entities.Enum.Role;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.UserEntity;
-import com.Eventicket.Services.Exception.Email.EmailSendException;
-import com.Eventicket.Services.Exception.User.*;
+import com.Eventicket.Exception.Email.EmailSendException;
+import com.Eventicket.Exception.User.*;
 import com.Eventicket.Repositories.AddresRepository;
 import com.Eventicket.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -20,27 +25,32 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private AddresRepository addresRepository;
-
-    @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private TicketService ticketService;
-
-    public UserEntity save(UserEntity userEntity) {
+    public String registrar(RegisterDTO dado) throws Exception {
         try {
-            userRepository.save(userEntity);
+            if (userRepository.findByEmail(dado.email()) != null) {
+                throw new IllegalArgumentException("Email ja esta sendo usado");
+            }
 
-            if (!userEntity.getEmail().isEmpty()) {
-                EmailEntity email = emailService.criarEmail(userEntity);
+            AddresEntity endereco = new AddresEntity();
+            endereco.setRua(dado.rua());
+            endereco.setCidade(dado.cidade());
+            endereco.setEstado(dado.estado());
+            endereco.setNumero(dado.numero());
+
+            UserEntity novoUsuario = new UserEntity(dado.nome(), dado.email(), dado.senha(), Role.CLIENTE, dado.cpf(), dado.celular());
+
+            novoUsuario.setEndereco(endereco);
+
+            userRepository.save(novoUsuario);
+
+            if (!novoUsuario.getEmail().isEmpty()) {
+                EmailEntity email = emailService.criarEmail(novoUsuario);
                 emailService.enviaEmail(email);
             }
 
-            return userEntity;
-        } catch (EmailSendException e) {
-            System.out.println("Erro ao enviar o e-mail: " + e.getMessage());
-            throw e;
+            return "Usuario registrado";
         } catch (DataIntegrityViolationException e) {
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
                 System.out.println("CPF já existe no sistema: " + e.getMessage());
@@ -48,30 +58,15 @@ public class UserService {
             }
             System.out.println("Erro de integridade de dados: " + e.getMessage());
             throw e;
+        } catch (EmailSendException e) {
+            System.out.println("Erro ao enviar o e-mail: " + e.getMessage());
+            throw e;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
-            System.out.println("Erro ao salvar o usuário: " + e.getMessage());
-            throw new UserSaveException("Erro ao salvar o usuário");
+            throw new Exception("erro ao registrar user", e);
         }
     }
-
-//    public UserEntity update1(UserEntity userEntity, Long id) {
-//        try {
-//            UserEntity usuarioExistente = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
-//
-//            userRepository.atualizarUsuario(id, userEntity.getNome(), userEntity.getCpf(), userEntity.getEmail(), userEntity.getSenha(), userEntity.getCelular());
-//
-//            AddresEntity novoEndereco = userEntity.getEndereco();
-//            if (novoEndereco != null && usuarioExistente.getEndereco() != null) {
-//                addresRepository.atualizarEndereco(usuarioExistente.getEndereco().getId(), novoEndereco.getRua(), novoEndereco.getNumero(), novoEndereco.getCidade(), novoEndereco.getEstado());
-//            }
-//
-//            return usuarioExistente;
-//        } catch (UserNotFoundException e) {
-//            throw e;
-//        } catch (Exception e) {
-//            throw new UserUpdateException("Erro ao atualizar a usuario: " + e.getMessage());
-//        }
-//    }
 
     public UserEntity update2(UserEntity userEntity, Long id) {
         try {
@@ -106,16 +101,22 @@ public class UserService {
         }
     }
 
-    public List<UserEntity> findAll() {
+    public List<UserDTOConsulta> findAll() {
         try {
-            return userRepository.findAll();
+            List<UserEntity> lista = userRepository.findAll();
+
+            List<UserDTOConsulta> dtos = lista.stream().map(UserMapper::toUserDTO).collect(Collectors.toList());
+
+            return dtos;
         } catch (Exception e) {
             throw new UserFindAllException("Erro ao retornar a lista de usuarios" + e.getMessage());
         }
     }
 
-    public UserEntity findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+    public UserDTOConsulta findById(Long id) {
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+
+        return UserMapper.toUserDTO(userEntity);
     }
 
     public List<EventEntity> buscarEventosDaMesmaCidade(Long idUsuario) {

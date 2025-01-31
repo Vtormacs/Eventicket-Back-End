@@ -1,8 +1,8 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.CategoryEntity;
+import com.Eventicket.Exception.Category.*;
 import com.Eventicket.Repositories.CategoryRepository;
-import com.Eventicket.Services.Exception.Category.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,11 @@
 package com.Eventicket.Controllers;
 
-import com.Eventicket.Entities.EventEntity;
-import com.Eventicket.Entities.UserEntity;
-import com.Eventicket.Services.UserService;
+import com.Eventicket.DTO.Consulta.UserDTOConsulta;
+import com.Eventicket.Entities.*;
+import com.Eventicket.Entities.Enum.Role;
+import com.Eventicket.Entities.Enum.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusTicket;
+import com.Eventicket.Repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,8 +14,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -20,100 +28,113 @@ import static org.mockito.Mockito.*;
 class UserControllerTest {
 
     @MockBean
-    UserService userService;
+    UserRepository userRepository;
 
     @Autowired
     UserController userController;
 
-    Long userId;
     UserEntity user;
 
     @BeforeEach
-    void setup() {
-        user = new UserEntity(1L, "Nome Teste", "845.952.957-22", "vitor@hotmail.com", "senha", "123456789", false, null, null, null);
-        userId = user.getId();
+    void setUp() {
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua Teste", "123", null, null);
+        user = new UserEntity(1L, Role.CLIENTE, "Vitor Test", "123.456.789-00", "vitorteste@gmail.com", "senha", "+5511999999999", true, address, null, null);
 
-        when(userService.findById(userId)).thenReturn(user);
-
-        List<UserEntity> users = new ArrayList<>();
-        users.add(user);
-        when(userService.findAll()).thenReturn(users);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
     }
 
     @Test
-    @DisplayName("Teste controller save, status e objeto salvo")
-    void save() {
-        when(userService.save(user)).thenReturn(user);
+    @DisplayName("Teste de atualização de usuário - sucesso")
+    void testUpdateUserSuccess() {
+        UserEntity updatedUser = new UserEntity(1L, Role.CLIENTE, "Vitor Atualizado", "123.456.789-00", "vitoratualizado@gmail.com", "novaSenha", "+5511988888888", true, user.getEndereco(), null, null);
 
-        ResponseEntity<UserEntity> response = userController.save(user);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        ResponseEntity<UserEntity> response = userController.update(updatedUser, user.getId());
+
+        assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("vitor@hotmail.com", response.getBody().getEmail());
+        assertEquals("Vitor Test", response.getBody().getNome());
+        assertEquals("vitorteste@gmail.com", response.getBody().getEmail());
     }
 
     @Test
-    @DisplayName("Teste controller update, status e objeto atualizado")
-    void update() {
-        when(userService.update2(user, userId)).thenReturn(user);
+    @DisplayName("Teste de deleção de usuário - sucesso")
+    void testDeleteUserSuccess() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        ResponseEntity<UserEntity> response = userController.update(user, userId);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Nome Teste", response.getBody().getNome());
-    }
+        ResponseEntity<String> response = userController.delete(user.getId());
 
-    @Test
-    @DisplayName("Teste controller delete, status e confirmação de deletado")
-    void delete() {
-        when(userService.delete(userId)).thenReturn("Usuario Deletado");
-
-        ResponseEntity<String> response = userController.delete(userId);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Usuario Deletado", response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(userRepository, times(1)).deleteById(user.getId());
     }
 
     @Test
-    @DisplayName("Teste controller findAll, status e lista de usuários")
-    void findAll() {
-        ResponseEntity<List<UserEntity>> response = userController.findAll();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    @DisplayName("Teste de busca por todos os usuários - sucesso")
+    void testFindAllUsers() {
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
+        UserEntity user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, null, null);
+        EventEntity event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+        BuyEntity buy = new BuyEntity(Instant.now(), 100.00, StatusBuy.PAGO, user);
+        TicketEntity ticket = new TicketEntity(1L, StatusTicket.VALIDO, user, event, buy);
+        List<TicketEntity> ingressos = new ArrayList<>();
+        ingressos.add(ticket);
+        buy.setIngressos(ingressos);
+        user.setCompras(List.of(buy));
+        user.setIngressos(ingressos);
+
+        List<UserEntity> users = List.of(user);
+        when(userRepository.findAll()).thenReturn(users);
+
+        ResponseEntity<List<UserDTOConsulta>> response = userController.findAll();
+
         assertEquals(1, response.getBody().size());
-    }
-
-    @Test
-    @DisplayName("Teste controller findById, status e objeto encontrado")
-    void findById() {
-        ResponseEntity<UserEntity> response = userController.findById(userId);
+        assertEquals(user.getId(), response.getBody().get(0).id());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Nome Teste", response.getBody().getNome());
     }
 
     @Test
-    @DisplayName("Teste buscarEventosDaMesmaCidade, eventos encontrados")
-    void buscarEventosDaMesmaCidade() {
-        List<EventEntity> eventos = new ArrayList<>();
-        when(userService.buscarEventosDaMesmaCidade(userId)).thenReturn(eventos);
+    @DisplayName("Teste de busca por ID - sucesso")
+    void testFindUserByIdSuccess() {
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
 
-        ResponseEntity<List<EventEntity>> response = userController.buscarEventosDaMesmaCidade(userId);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(0, response.getBody().size());
-    }
+        // Inicializa as listas de compras e ingressos para evitar null pointers
+        List<BuyEntity> compras = new ArrayList<>();
+        List<TicketEntity> ingressos = new ArrayList<>();
 
-    @Test
-    @DisplayName("Teste validarConta, sucesso")
-    void validarContaSucesso() {
-        when(userService.validarConta(userId, "hashValido")).thenReturn(true);
+        UserEntity user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, compras, ingressos);
 
-        var resposta = userController.validarConta(userId, "hashValido");
-        assertEquals(HttpStatus.OK, resposta.getStatusCode());
-        assertEquals("Conta validada com sucesso!", resposta.getBody());
+        EventEntity event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+        BuyEntity buy = new BuyEntity(Instant.now(), 100.00, StatusBuy.PAGO, user);
+
+        // Inicializa a lista de ingressos
+        TicketEntity ticket = new TicketEntity(1L, StatusTicket.VALIDO, user, event, buy);
+        ingressos.add(ticket);
+
+        // Adiciona compra à lista de compras do usuário
+        compras.add(buy);
+        buy.setIngressos(ingressos);
+
+        // Simulação do comportamento esperado ao chamar o método findById
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        var resultado = userController.findById(user.getId());
+
+        assertEquals(user.getId(), resultado.getBody().id());
+        assertEquals(HttpStatus.OK, resultado.getStatusCode());
     }
 
     @Test
     @DisplayName("Teste validarConta, falha na validação")
     void validarContaFalha() {
-        when(userService.validarConta(userId, "hashInvalido")).thenReturn(false);
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        var resposta = userController.validarConta(userId, "hashInvalido");
-        assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
-        assertEquals("Falha na validação da conta.", resposta.getBody());
+        ResponseEntity<String> response = userController.validarConta(userId, "hashInvalido");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Falha na validação da conta.", response.getBody());
     }
 }

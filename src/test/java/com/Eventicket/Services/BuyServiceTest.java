@@ -1,15 +1,16 @@
 package com.Eventicket.Services;
 
+import com.Eventicket.DTO.Consulta.BuyDTOConsulta;
 import com.Eventicket.Entities.*;
-import com.Eventicket.Entities.Enums.StatusBuy;
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.Role;
+import com.Eventicket.Entities.Enum.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusTicket;
 import com.Eventicket.Repositories.*;
-import com.Eventicket.Services.Exception.Event.EventNotFoundException;
-import com.Eventicket.Services.Exception.User.UserNotFoundException;
+import com.Eventicket.Exception.Event.EventNotFoundException;
+import com.Eventicket.Exception.User.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,42 +37,39 @@ class BuyServiceTest {
     @MockBean
     EventRepository eventRepository;
 
-    @MockBean
-    EmailService emailService;
-
     @Autowired
     BuyService buyService;
 
+    AddresEntity address;
+    UserEntity user;
+    EventEntity event;
+    BuyEntity compra;
+
     @BeforeEach
     void setUp() {
+        address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
+        user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, null, null);
+        event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(new TicketEntity());
+        when(buyRepository.save(any(BuyEntity.class))).thenReturn(new BuyEntity());
+
+        Map<Long, Integer> carrinho = Map.of(1L, 2);
+
+        compra = buyService.processarCompra(user.getId(), carrinho);
     }
 
     @Test
     @DisplayName("Teste de compra - sucesso")
     void testSaveCompraSuccess() {
-        Long idUsuario = 1L;
         Map<Long, Integer> carrinho = Map.of(1L, 2);
 
-        UserEntity usuario = new UserEntity();
-        usuario.setId(idUsuario);
-        usuario.setAtivo(true);
-
-        EventEntity evento = new EventEntity();
-        evento.setId(1L);
-        evento.setNome("Evento Teste");
-        evento.setPrecoDoIngresso(100.0);
-        evento.setQuantidade(10);
-        evento.setData(LocalDate.now().plusDays(2));
-
-        when(userRepository.findById(idUsuario)).thenReturn(Optional.of(usuario));
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(evento));
-        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(new TicketEntity());
-        when(buyRepository.save(any(BuyEntity.class))).thenReturn(new BuyEntity());
-
-        BuyEntity compra = buyService.save(idUsuario, carrinho);
+        var compra = buyService.processarCompra(user.getId(), carrinho);
 
         assertNotNull(compra);
-        assertEquals(200.0, compra.getTotal());
+        assertEquals(200.00, compra.getTotal());
         assertEquals(StatusBuy.PAGO, compra.getStatusBuy());
         assertEquals(2, compra.getIngressos().size());
     }
@@ -85,7 +83,7 @@ class BuyServiceTest {
         when(userRepository.findById(idUsuario)).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
-            buyService.save(idUsuario, carrinho);
+            buyService.processarCompra(idUsuario, carrinho);
         });
 
         assertEquals("Usuario nao encontrado", exception.getMessage());
@@ -103,7 +101,7 @@ class BuyServiceTest {
         when(userRepository.findById(usuario.getId())).thenReturn(Optional.of(usuario));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            buyService.save(usuario.getId(), carrinho);
+            buyService.processarCompra(usuario.getId(), carrinho);
         });
 
         assertEquals("Erro ao salvar a compra: Usuário precisa ativar a conta", exception.getMessage());
@@ -123,7 +121,7 @@ class BuyServiceTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
         EventNotFoundException exception = assertThrows(EventNotFoundException.class, () -> {
-            buyService.save(idUsuario, carrinho);
+            buyService.processarCompra(idUsuario, carrinho);
         });
 
         assertEquals("Evento nao encontrado", exception.getMessage());
@@ -150,7 +148,7 @@ class BuyServiceTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(evento));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            buyService.save(idUsuario, carrinho);
+            buyService.processarCompra(idUsuario, carrinho);
         });
 
         assertEquals("Erro ao salvar a compra: A capacidade dos eventos já está no limite", exception.getMessage());
@@ -177,7 +175,7 @@ class BuyServiceTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(evento));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            buyService.save(idUsuario, carrinho);
+            buyService.processarCompra(idUsuario, carrinho);
         });
 
         assertEquals("Erro ao salvar a compra: O evento já passou!", exception.getMessage());
@@ -215,28 +213,44 @@ class BuyServiceTest {
     @Test
     @DisplayName("Teste de busca de todas as compras - sucesso")
     void testFindAllCompras() {
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
+        UserEntity user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, null, null);
+        EventEntity event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+        BuyEntity buy = new BuyEntity(Instant.now(), 100.00, StatusBuy.PAGO, user);
+        TicketEntity ticket = new TicketEntity(1L, StatusTicket.VALIDO, user, event, buy);
+        List<TicketEntity> ingressos = new ArrayList<>();
+        ingressos.add(ticket);
+        buy.setIngressos(ingressos);
+
         List<BuyEntity> compras = new ArrayList<>();
-        compras.add(new BuyEntity());
+
+        compras.add(buy);
 
         when(buyRepository.findAll()).thenReturn(compras);
 
-        List<BuyEntity> result = buyService.findAll();
+        List<BuyDTOConsulta> result = buyService.findAll();
 
         assertEquals(1, result.size());
     }
 
+
     @Test
     @DisplayName("Teste de busca por ID - sucesso")
     void testFindCompraByIdSuccess() {
-        Long idCompra = 1L;
-        BuyEntity compra = new BuyEntity();
-        compra.setId(idCompra);
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
+        UserEntity user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, null, null);
+        EventEntity event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+        BuyEntity buy = new BuyEntity(Instant.now(), 100.00, StatusBuy.PAGO, user);
+        TicketEntity ticket = new TicketEntity(1L, StatusTicket.VALIDO, user, event, buy);
+        List<TicketEntity> ingressos = new ArrayList<>();
+        ingressos.add(ticket);
+        buy.setIngressos(ingressos);
 
-        when(buyRepository.findById(idCompra)).thenReturn(Optional.of(compra));
+        when(buyRepository.findById(buy.getId())).thenReturn(Optional.of(buy));
 
-        BuyEntity result = buyService.findById(idCompra);
+        var result = buyService.findById(buy.getId());
 
-        assertEquals(idCompra, result.getId());
+        assertEquals(buy.getId(), result.id());
     }
 
     @Test
@@ -250,6 +264,6 @@ class BuyServiceTest {
             buyService.findById(idCompra);
         });
 
-        assertEquals("Erro ao buscar a compra: Compra não encontrada", exception.getMessage());
+        assertEquals("Erro ao buscar a compra: Compra com id: 1 nao encontrado", exception.getMessage());
     }
 }

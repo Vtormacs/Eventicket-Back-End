@@ -1,15 +1,15 @@
 package com.Eventicket.Entities;
 
-import com.Eventicket.Entities.Enums.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusBuy;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -19,7 +19,9 @@ import java.util.List;
 @Setter
 @Entity(name = "buy")
 @Table(name = "buy")
-public class BuyEntity {
+public class BuyEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

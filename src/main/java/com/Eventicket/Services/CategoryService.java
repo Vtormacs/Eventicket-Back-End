@@ -1,8 +1,8 @@
 package com.Eventicket.Services;
 
 import com.Eventicket.Entities.CategoryEntity;
+import com.Eventicket.Exception.Category.*;
 import com.Eventicket.Repositories.CategoryRepository;
-import com.Eventicket.Services.Exception.Category.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

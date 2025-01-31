@@ -1,16 +1,18 @@
 package com.Eventicket.Services;
 
+import com.Eventicket.DTO.Consulta.BuyDTOConsulta;
+import com.Eventicket.DTO.Mapper.BuyMapper;
 import com.Eventicket.Entities.*;
-import com.Eventicket.Entities.Enums.StatusBuy;
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusTicket;
 import com.Eventicket.Repositories.BuyRepository;
 import com.Eventicket.Repositories.EventRepository;
 import com.Eventicket.Repositories.TicketRepository;
 import com.Eventicket.Repositories.UserRepository;
-import com.Eventicket.Services.Exception.Buy.EventCapacityFullException;
-import com.Eventicket.Services.Exception.Buy.EventDatePassedException;
-import com.Eventicket.Services.Exception.Event.EventNotFoundException;
-import com.Eventicket.Services.Exception.User.UserNotFoundException;
+import com.Eventicket.Exception.Buy.EventCapacityFullException;
+import com.Eventicket.Exception.Buy.EventDatePassedException;
+import com.Eventicket.Exception.Event.EventNotFoundException;
+import com.Eventicket.Exception.User.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,7 @@ public class BuyService {
     @Autowired
     private EmailService emailService;
 
-    public BuyEntity save(Long idUsuario, Map<Long, Integer> carrinho) {
+    public BuyEntity processarCompra(Long idUsuario, Map<Long, Integer> carrinho) {
         try {
             UserEntity usuario = userRepository.findById(idUsuario).orElseThrow(() -> new UserNotFoundException());
             if (!usuario.getAtivo()){
@@ -71,7 +73,7 @@ public class BuyService {
 
                 total += quantidadeCompra * eventEntity.getPrecoDoIngresso();
                 eventEntity.setQuantidade(eventEntity.getQuantidade() - quantidadeCompra);
-                eventRepository.save(eventEntity); // Garantir que o evento foi salvo
+                eventRepository.save(eventEntity);
             }
 
             venda.setIngressos(ingressos);
@@ -87,22 +89,6 @@ public class BuyService {
         }
     }
 
-
-    public BuyEntity update(BuyEntity buyEntity, Long id) {
-        try {
-            if (buyRepository.findById(id).isPresent()) {
-                buyEntity.setId(id);
-                return buyRepository.save(buyEntity);
-            } else {
-                System.out.println("Compra não encontrada com o ID: " + id);
-                throw new RuntimeException("Compra não encontrada com o ID: " + id);
-            }
-        } catch (Exception e) {
-            System.out.println("Erro ao atualizar a compra: " + e.getMessage());
-            throw new RuntimeException("Erro ao atualizar a compra: ", e);
-        }
-    }
-
     public String delete(Long id) {
         try {
             buyRepository.findById(id).orElseThrow(() -> new RuntimeException("Compra nao encontrada"));
@@ -114,21 +100,23 @@ public class BuyService {
         }
     }
 
-    public List<BuyEntity> findAll() {
+    public List<BuyDTOConsulta> findAll() {
         try {
-            return buyRepository.findAll();
+            List<BuyEntity> compras = buyRepository.findAll();
+
+            List<BuyDTOConsulta> dtos = compras.stream().map(BuyMapper::toBuyDTO).collect(Collectors.toList());
+
+            return dtos;
         } catch (Exception e) {
             System.out.println("Erro ao retornar a lista de compras: " + e.getMessage());
             throw new RuntimeException("Erro ao retornar a lista de compras: " + e.getMessage());
         }
     }
 
-    public BuyEntity findById(Long id) {
+    public BuyDTOConsulta findById(Long id) {
         try {
-            return buyRepository.findById(id).orElseThrow(() -> {
-                System.out.println("Compra não encontrada com o ID: " + id);
-                return new RuntimeException("Compra não encontrada");
-            });
+            BuyEntity compra = buyRepository.findById(id).orElseThrow(() -> new RuntimeException("Compra com id: " +id + " nao encontrado"));
+            return BuyMapper.toBuyDTO(compra);
         } catch (Exception e) {
             System.out.println("Erro ao buscar a compra: " + e.getMessage());
             throw new RuntimeException("Erro ao buscar a compra: " + e.getMessage());

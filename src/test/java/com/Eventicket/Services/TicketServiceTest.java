@@ -1,6 +1,6 @@
 package com.Eventicket.Services;
 
-import com.Eventicket.Entities.Enums.StatusTicket;
+import com.Eventicket.Entities.Enum.StatusTicket;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Entities.TicketEntity;
 import com.Eventicket.Repositories.EventRepository;

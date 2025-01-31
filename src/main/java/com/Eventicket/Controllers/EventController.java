@@ -1,5 +1,6 @@
 package com.Eventicket.Controllers;
 
+import com.Eventicket.DTO.Consulta.EventDTOConsulta;
 import com.Eventicket.Entities.EventEntity;
 import com.Eventicket.Services.EventService;
 import lombok.Getter;
@@ -45,7 +46,7 @@ public class EventController {
     }
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<EventEntity>> findAll() {
+    public ResponseEntity<List<EventDTOConsulta>> findAll() {
         try {
             return ResponseEntity.ok(eventService.findAll());
         } catch (Exception e) {

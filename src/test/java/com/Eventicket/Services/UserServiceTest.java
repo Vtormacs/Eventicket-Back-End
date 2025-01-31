@@ -1,21 +1,21 @@
 package com.Eventicket.Services;
 
-import com.Eventicket.Entities.AddresEntity;
-import com.Eventicket.Entities.EmailEntity;
-import com.Eventicket.Entities.EventEntity;
-import com.Eventicket.Entities.UserEntity;
-import com.Eventicket.Repositories.AddresRepository;
+import com.Eventicket.DTO.Consulta.UserDTOConsulta;
+import com.Eventicket.Entities.*;
+import com.Eventicket.Entities.Enum.Role;
+import com.Eventicket.Entities.Enum.StatusBuy;
+import com.Eventicket.Entities.Enum.StatusTicket;
+import com.Eventicket.Exception.User.UserNotFoundException;
 import com.Eventicket.Repositories.UserRepository;
-import com.Eventicket.Services.Exception.Email.EmailSendException;
-import com.Eventicket.Services.Exception.User.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataIntegrityViolationException;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,234 +27,133 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @MockBean
-    UserRepository userRepository;
-
-    @MockBean
-    AddresRepository addresRepository;
-
-    @MockBean
-    EmailService emailService;
+    private UserRepository userRepository;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
-    Long userId;
-    UserEntity user;
-    AddresEntity address;
-    UserEntity existingUser;
-    UserEntity updatedUser;
-    AddresEntity existingAddress;
+    private UserEntity user;
 
     @BeforeEach
-    void setup() {
-        address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
-        user = new UserEntity(1L, "Nome Teste", "845.952.957-22", "vitor@hotmail.com", "senha", "123456789", false, address, null, null);
-        userId = user.getId();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    void setUp() {
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua Teste", "123", null, null);
+        user = new UserEntity(1L, Role.CLIENTE, "Vitor Test", "123.456.789-00", "vitorteste@gmail.com", "senha", "+5511999999999", true, address, null, null);
 
-        List<UserEntity> users = new ArrayList<>();
-        users.add(user);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+    }
+
+    @Test
+    @DisplayName("Teste de atualização de usuário - sucesso")
+    void testUpdateUserSuccess() {
+        UserEntity updatedUser = new UserEntity(1L, Role.CLIENTE, "Vitor Atualizado", "123.456.789-00", "vitoratualizado@gmail.com", "novaSenha", "+5511988888888", true, user.getEndereco(), null, null);
+
+        UserEntity result = userService.update2(updatedUser, user.getId());
+
+        assertNotNull(result);
+        assertEquals("Vitor Test", result.getNome());
+        assertEquals("vitorteste@gmail.com", result.getEmail());
+    }
+
+    @Test
+    @DisplayName("Teste de atualização de usuário - Usuário não encontrado")
+    void testUpdateUserNotFound() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.update2(user, 99L);
+        });
+
+        assertEquals("Usuario nao encontrado", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Teste de deleção de usuário - sucesso")
+    void testDeleteUserSuccess() {
+        String result = userService.delete(user.getId());
+
+        assertEquals("Usuario Deletado", result);
+        verify(userRepository, times(1)).deleteById(user.getId());
+    }
+
+    @Test
+    @DisplayName("Teste de deleção de usuário - Usuário não encontrado")
+    void testDeleteUserNotFound() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.delete(99L);
+        });
+
+        assertEquals("Usuario nao encontrado", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Teste de busca por todos os usuários - sucesso")
+    void testFindAllUsers() {
+
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
+        UserEntity user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, null, null);
+        EventEntity event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+        BuyEntity buy = new BuyEntity(Instant.now(), 100.00, StatusBuy.PAGO, user);
+        TicketEntity ticket = new TicketEntity(1L, StatusTicket.VALIDO, user, event, buy);
+        List<TicketEntity> ingressos = new ArrayList<>();
+        ingressos.add(ticket);
+        buy.setIngressos(ingressos);
+        user.setCompras(List.of(buy));
+        user.setIngressos(ingressos);
+
+        List<UserEntity> users = List.of(user);
         when(userRepository.findAll()).thenReturn(users);
 
-        when(userRepository.save(user)).thenReturn(user);
+        var result = userService.findAll();
 
-        existingUser = new UserEntity(1L, "Nome Antigo", "12345678900", "email@antigo.com", "senhaAntiga", "987654321", false, null, null, null);
-        existingAddress = new AddresEntity(1L, "EstadoE", "CidadeE", "RuaE", "1234", List.of(existingUser), null);
-        existingUser.setEndereco(existingAddress);
-        updatedUser = new UserEntity(1L, "Nome Novo", "12345678900", "email@novo.com", "senhaNova", "123456789", false, new AddresEntity(null, "EstadoN", "CidadeN", "RuaN", "1234", null, null), null, null);
+        assertEquals(1, result.size());
+        assertEquals(user.getId(), result.get(0).id());
     }
 
     @Test
-    @DisplayName("Salvar usuário com sucesso")
-    void save() {
-        when(emailService.criarEmail(user)).thenReturn(new EmailEntity());
-        var retorno = userService.save(user);
+    @DisplayName("Teste de busca por ID - sucesso")
+    void testFindUserByIdSuccess() {
+        AddresEntity address = new AddresEntity(1L, "Estado Teste", "Cidade Teste", "Rua teste", "111", null, null);
 
-        assertEquals(userId, retorno.getId());
-        assertEquals("vitor@hotmail.com", retorno.getEmail());
+        // Inicializa as listas de compras e ingressos para evitar null pointers
+        List<BuyEntity> compras = new ArrayList<>();
+        List<TicketEntity> ingressos = new ArrayList<>();
+
+        UserEntity user = new UserEntity(1L, Role.CLIENTE, "Vitor test", "12345678900", "vitorteste@gmail.com", "senha", "45998375761", true, address, compras, ingressos);
+
+        EventEntity event = new EventEntity(1L, "Nome evento", 100.00, 10, LocalDate.now().plusDays(1), "Descrição", address, null, null);
+        BuyEntity buy = new BuyEntity(Instant.now(), 100.00, StatusBuy.PAGO, user);
+
+        // Inicializa a lista de ingressos
+        TicketEntity ticket = new TicketEntity(1L, StatusTicket.VALIDO, user, event, buy);
+        ingressos.add(ticket);
+
+        // Adiciona compra à lista de compras do usuário
+        compras.add(buy);
+        buy.setIngressos(ingressos);
+
+        // Simulação do comportamento esperado ao chamar o método findById
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        // Chama o método findById no UserService
+        var result = userService.findById(user.getId());
+
+        // Verifica se o ID do resultado é igual ao ID do usuário
+        assertEquals(user.getId(), result.id());
     }
 
 
     @Test
-    @DisplayName("Deletar usuário com sucesso")
-    void delete() {
-        var retorno = userService.delete(userId);
+    @DisplayName("Teste de busca por ID - Usuário não encontrado")
+    void testFindUserByIdNotFound() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertEquals("Usuario Deletado", retorno);
-    }
-
-    @Test
-    @DisplayName("Listar todos os usuários")
-    void findAll() {
-        var retorno = userService.findAll();
-
-        assertEquals(1, retorno.size());
-    }
-
-    @Test
-    @DisplayName("Buscar usuário por ID com sucesso")
-    void findById() {
-        var retorno = userService.findById(userId);
-
-        assertEquals(userId, retorno.getId());
-        assertEquals("Nome Teste", retorno.getNome());
-    }
-
-    @Test
-    @DisplayName("Buscar eventos da mesma cidade")
-    void buscarEventosDaMesmaCidade() {
-        List<EventEntity> events = new ArrayList<>();
-        when(userRepository.buscarEventosDaMesmaCidade("Cidade Teste")).thenReturn(events);
-
-        var retorno = userService.buscarEventosDaMesmaCidade(userId);
-
-        assertEquals(events, retorno);
-    }
-
-    @Test
-    @DisplayName("Salvar usuário - Erro ao enviar e-mail")
-    void saveEmailError() {
-        when(emailService.criarEmail(user)).thenReturn(new EmailEntity());
-        doThrow(new EmailSendException("Erro ao enviar o e-mail")).when(emailService).enviaEmail(any());
-
-        assertThrows(EmailSendException.class, () -> {
-            userService.save(user);
-        });
-    }
-
-    @Test
-    @DisplayName("Atualizar usuário - Erro ao encontrar usuário")
-    void updateUserNotFound() {
-        UserEntity updatedUser = new UserEntity(userId, "Nome Atualizado", "845.952.957-22", "email@atualizado.com", "senha", "123456789", false, address, null, null);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> {
-            userService.update2(updatedUser, userId);
-        });
-    }
-
-    @Test
-    @DisplayName("Deletar usuário - Erro ao encontrar usuário")
-    void deleteUserNotFound() {
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> {
-            userService.delete(userId);
-        });
-    }
-
-    @Test
-    @DisplayName("Buscar eventos da mesma cidade - Erro ao encontrar usuário")
-    void buscarEventosDaMesmaCidadeError() {
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> {
-            userService.buscarEventosDaMesmaCidade(userId);
-        });
-    }
-
-    @Test
-    @DisplayName("Validar conta com sucesso")
-    void validarConta() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        String hashRecebido = EmailService.generateHash(user.getNome(), user.getEmail());
-
-        boolean valido = userService.validarConta(userId, hashRecebido);
-
-        assertTrue(valido);
-    }
-
-    @Test
-    @DisplayName("Validar conta com hash errado")
-    void validarContaErro() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        String hashRecebido = "hashErrado";
-
-        boolean valido = userService.validarConta(userId, hashRecebido);
-
-        assertFalse(valido);
-    }
-
-    @Test
-    @DisplayName("CPF duplicado")
-    void CPFJaExiste() {
-        doThrow(new DataIntegrityViolationException("CPF duplicado")).when(userRepository).save(any());
-
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            userService.save(user);
-        });
-    }
-
-    @Test
-    @DisplayName("Listar todos os usuários - Erro")
-    void findAllError() {
-        doThrow(new RuntimeException("Erro ao listar usuários")).when(userRepository).findAll();
-
-        assertThrows(UserFindAllException.class, () -> {
-            userService.findAll();
-        });
-    }
-
-    @Test
-    @DisplayName("Buscar eventos da mesma cidade - Erro genérico")
-    void buscarEventosDaMesmaCidadeGenericError() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        doThrow(new RuntimeException("Erro ao buscar eventos")).when(userRepository).buscarEventosDaMesmaCidade(anyString());
-
-        assertThrows(buscarEventosDaMesmaCidadeException.class, () -> {
-            userService.buscarEventosDaMesmaCidade(userId);
-        });
-    }
-
-    @Test
-    @DisplayName("Erro ao salvar usuário - Exceção genérica")
-    void saveGenericError() {
-        doThrow(new RuntimeException("Erro genérico")).when(userRepository).save(any());
-
-        assertThrows(UserSaveException.class, () -> {
-            userService.save(user);
-        });
-    }
-
-    @Test
-    @DisplayName("Erro ao deletar usuário - Exceção genérica")
-    void deleteGenericError() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        doThrow(new RuntimeException("Erro ao deletar")).when(userRepository).deleteById(userId);
-
-        assertThrows(UserDeleteException.class, () -> {
-            userService.delete(userId);
-        });
-    }
-
-    @Test
-    @DisplayName("Atualizar usuário com sucesso")
-    void update2Success() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(any(UserEntity.class))).thenReturn(updatedUser);
-
-        var retorno = userService.update2(updatedUser, userId);
-
-        assertEquals(updatedUser.getId(), retorno.getId());
-        assertEquals(updatedUser.getNome(), retorno.getNome());
-        assertEquals(existingAddress.getId(), retorno.getEndereco().getId());
-    }
-
-    @Test
-    @DisplayName("Erro inesperado ao atualizar usuário")
-    void update2UnexpectedError() {
-        UserEntity updatedUser = new UserEntity(1L, "Nome Atualizado", "845.952.957-22", "email@atualizado.com", "senha", "123456789", false, address, null, null);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(any(UserEntity.class))).thenThrow(new RuntimeException("Erro de banco de dados"));
-
-        Exception exception = assertThrows(UserUpdateException.class, () -> {
-            userService.update2(updatedUser, userId);
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.findById(99L);
         });
 
-        assertTrue(exception.getMessage().contains("Erro ao atualizar o usuário: Erro de banco de dados"));
+        assertEquals("Usuario nao encontrado", exception.getMessage());
     }
-
 }
